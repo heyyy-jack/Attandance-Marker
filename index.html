@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f3f5fb">
+<meta name="description" content="Private, offline-first coaching attendance manager">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Attendance Marker</title>
+<style>
+:root{--bg:#f2f2f7;--card:rgba(255,255,255,.62);--card-solid:#ffffff;--edge:rgba(255,255,255,.85);--sep:rgba(60,60,67,.16);--label:#000000;--label2:rgba(60,60,67,.62);--fill:rgba(120,120,128,.12);--input:rgba(255,255,255,.8);--tabon:rgba(255,255,255,.85);--blue:#007aff;--green:#248a3d;--red:#d70015;--orange:#b25000;--shadow:0 10px 30px rgba(20,30,70,.08);--hi:inset 0 1px 0 rgba(255,255,255,.9);--orb:.55;--sheet:rgba(248,248,252,.88);color-scheme:light;}
+:root[data-theme="dark"]{--bg:#000000;--card:rgba(255,255,255,.08);--card-solid:#1c1c1e;--edge:rgba(255,255,255,.14);--sep:rgba(84,84,88,.65);--label:#ffffff;--label2:rgba(235,235,245,.6);--fill:rgba(120,120,128,.32);--input:rgba(255,255,255,.08);--tabon:rgba(255,255,255,.18);--blue:#0a84ff;--green:#30d158;--red:#ff453a;--orange:#ff9f0a;--shadow:0 12px 40px rgba(0,0,0,.45);--hi:inset 0 1px 0 rgba(255,255,255,.12);--orb:.22;--sheet:rgba(30,30,34,.82);color-scheme:dark;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000000;--card:rgba(255,255,255,.08);--card-solid:#1c1c1e;--edge:rgba(255,255,255,.14);--sep:rgba(84,84,88,.65);--label:#ffffff;--label2:rgba(235,235,245,.6);--fill:rgba(120,120,128,.32);--input:rgba(255,255,255,.08);--tabon:rgba(255,255,255,.18);--blue:#0a84ff;--green:#30d158;--red:#ff453a;--orange:#ff9f0a;--shadow:0 12px 40px rgba(0,0,0,.45);--hi:inset 0 1px 0 rgba(255,255,255,.12);--orb:.22;--sheet:rgba(30,30,34,.82);color-scheme:dark;}}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--label);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.35;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:var(--orb);background:radial-gradient(circle at 12% 10%,#5ac8fa 0,transparent 38%),radial-gradient(circle at 88% 40%,#af52de 0,transparent 36%)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{position:relative;max-width:760px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 96px}
+
+/* Header */
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+[hidden]{display:none!important}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(180deg,#4aa8ff,#0a7aff);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 16px rgba(10,122,255,.35);display:grid;place-items:center;color:#fff;font-size:20px}
+.brand h1{font-size:24px;margin:0;font-weight:700;letter-spacing:-.4px}
+.brand small{color:var(--label2);font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Buttons */
+.btn{border:1px solid var(--edge);background:var(--card);color:var(--blue);padding:10px 15px;border-radius:14px;font-weight:600;font-size:15px;box-shadow:var(--hi),0 3px 10px rgba(0,0,0,.05);transition:transform .12s ease}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:linear-gradient(180deg,#48a6ff,#0a7aff);border-color:transparent;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 18px rgba(10,122,255,.3)}
+.btn.danger{color:var(--red)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.install{display:none}.install.show{display:inline-flex}
+
+/* Glass cards */
+.glass,.card{background:var(--card);border:1px solid var(--edge);border-radius:24px;box-shadow:var(--shadow),var(--hi);padding:14px;margin-bottom:12px}
+.card h2{font-size:20px;font-weight:700;margin:0 0 6px}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;color:#fff;padding:14px 16px;border-radius:24px;margin-bottom:12px;background:linear-gradient(135deg,#4aa8ff 0%,#0a7aff 45%,#6a5cff 100%);box-shadow:0 18px 44px rgba(10,122,255,.35),inset 0 1px 0 rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.35)}
+.eyebrow{font-size:12px;opacity:.85;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.hero h2{font-size:22px;letter-spacing:-.4px;margin:4px 0 0}
+.hero p{margin:0;opacity:.85}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.stat{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:14px;padding:8px 9px}
+.stat label{display:block;font-size:10px;opacity:.9;line-height:1.2}
+.stat strong{display:block;font-size:19px;margin-top:2px;font-variant-numeric:tabular-nums}
+
+/* Floating glass tab bar */
+.tabbar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);max-width:736px;margin:0 auto;display:flex;justify-content:space-around;gap:2px;padding:6px;border-radius:30px;background:var(--card);border:1px solid var(--edge);box-shadow:0 12px 34px rgba(0,0,0,.14),var(--hi);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);z-index:10}
+.tab{flex:1;border:0;background:transparent;color:var(--label2);padding:7px 4px;border-radius:22px;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tab .gl{font-size:18px;line-height:1}
+.tab.active{color:var(--blue);background:var(--tabon);box-shadow:var(--hi)}
+
+/* Panels & sections */
+.panel{display:none}.panel.active{display:block}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.sectionhead h2{font-size:20px;margin:0;font-weight:700}
+.sub{font-size:13px;color:var(--label2)}
+.muted{color:var(--label2)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
+.toolbar .field{min-width:130px}
+.field{display:grid;gap:5px;min-width:0}
+.field label{font-size:13px;color:var(--label2);font-weight:600}
+input,select{padding:11px 12px;border:1px solid var(--edge);border-radius:12px;background:var(--input);color:var(--label);outline:none;min-width:0}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,122,255,.2)}
+.hint{display:none;background:var(--fill);color:var(--label2);border-radius:14px;padding:11px 13px;font-size:13px;margin:12px 0;line-height:1.4}
+
+/* Tables */
+.tablewrap{overflow:auto;border-radius:16px;border:1px solid var(--sep);background:var(--input)}
+table{border-collapse:collapse;width:100%;min-width:0}
+th,td{text-align:left;padding:9px 10px;border-bottom:.5px solid var(--sep);font-size:14px}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--label2);font-weight:600}
+tr:last-child td{border-bottom:0}
+.studentname{font-weight:600}
+.studentmeta{font-size:12px;color:var(--label2);margin-top:2px}
+.statusgroup{display:flex;gap:4px}
+.status{border:1px solid var(--edge);background:var(--fill);border-radius:9px;padding:6px 0;font-size:13px;font-weight:700;color:var(--label2);width:36px}
+.status[data-v="P"].on{background:rgba(52,199,89,.2);color:var(--green);border-color:rgba(52,199,89,.45)}
+.status[data-v="A"].on{background:rgba(255,59,48,.18);color:var(--red);border-color:rgba(255,59,48,.45)}
+.status[data-v="L"].on{background:rgba(255,149,0,.2);color:var(--orange);border-color:rgba(255,149,0,.45)}
+.empty{text-align:center;padding:26px;color:var(--label2)}
+
+/* Forms & lists */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.formgrid .full{grid-column:1/-1}
+.list{display:grid;gap:9px}
+.studentrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-radius:16px;background:var(--fill)}
+.studentrow strong{display:block}
+.studentrow small{color:var(--label2)}
+.studentleft{display:flex;align-items:center;gap:12px;min-width:0}
+.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(145deg,#a6c8ff,#c9b5ff);display:grid;place-items:center;color:#1d3b8a;font-weight:700;flex-shrink:0}
+.pill{font-size:12px;padding:5px 9px;border-radius:20px;background:var(--fill);color:var(--label2)}
+.progress{height:6px;background:var(--fill);border-radius:6px;overflow:hidden;margin-top:8px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,#4aa8ff,#0a7aff);border-radius:6px}
+
+/* Report */
+.reportgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}
+.reportstat{padding:13px;background:var(--fill);border-radius:14px}
+.reportstat small{display:block;color:var(--label2)}
+.reportstat b{font-size:21px}
+.foot{text-align:center;color:var(--label2);font-size:12px;margin-top:24px}
+
+/* Segmented control (theme) */
+.seg{display:flex;background:var(--fill);border-radius:11px;padding:3px;gap:2px;margin-top:10px}
+.seg button{flex:1;border:0;background:transparent;padding:8px;border-radius:9px;font-weight:600;font-size:14px;color:var(--label)}
+.seg button.on{background:var(--tabon);box-shadow:var(--hi),0 2px 6px rgba(0,0,0,.1)}
+
+/* Sheet-style dialog */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.modal.open{display:flex}
+.dialog{width:100%;max-width:520px;max-height:90vh;overflow:auto;background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(180%);backdrop-filter:blur(40px) saturate(180%);border:1px solid var(--edge);border-radius:30px 30px 0 0;padding:22px 20px calc(env(safe-area-inset-bottom,0px) + 22px);box-shadow:0 -10px 40px rgba(0,0,0,.2)}
+.dialoghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.dialoghead h2{margin:0;font-size:19px}
+.close{border:0;background:var(--fill);border-radius:50%;width:32px;height:32px;font-size:20px;color:var(--label2)}
+
+.toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);left:50%;transform:translateX(-50%);background:rgba(30,30,34,.86);color:#fff;padding:11px 16px;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.25);display:none;z-index:30;font-size:14px;max-width:90vw;text-align:center}
+.toast.show{display:block}
+
+@media(max-width:760px){.grid2{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}.reportgrid{grid-template-columns:repeat(3,1fr)}.hero h2{font-size:22px}.stats{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:420px){.brand h1{font-size:23px}.brand small{font-size:11px}.logo{width:38px;height:38px}.stats .stat strong{font-size:19px}.reportstat{padding:10px}.reportstat b{font-size:18px}}
+@media print{body{background:#fff!important}body::before{display:none}.tabbar,.toast,.modal{display:none!important}.app>*:not(#reports),#reports .no-print{display:none!important}#reports{display:block!important}.reportprint{box-shadow:none!important;border:0!important;background:#fff!important;padding:0!important}.reportprint .tablewrap{overflow:visible}#reportTable{min-width:0}#reportTable th,#reportTable td{font-size:10px;padding:7px}.printtitle{display:block!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+ <div class="brand"><div class="logo">✦</div><div><h1>Attendance Marker</h1><small>Private by design · Offline-ready</small></div></div>
+ <div class="actions"><button class="btn install" id="installBtn">Install app</button><button class="btn" id="exportBtn">Backup</button><button class="btn" id="importBtn">Restore</button><input type="file" id="importFile" accept="application/json" hidden></div>
+</header>
+<section class="hero">
+ <div class="eyebrow" id="todayLabel">DAILY ATTENDANCE</div><h2 id="heroDate">Attendance, made simple.</h2>
+ <div class="stats">
+  <div class="stat"><label>Total students</label><strong id="totalStudents">0</strong></div>
+  <div class="stat"><label>Present today</label><strong id="presentToday">0</strong></div>
+  <div class="stat"><label>Absent today</label><strong id="absentToday">0</strong></div>
+  <div class="stat"><label>Not marked</label><strong id="unmarkedToday">0</strong></div>
+ </div>
+</section>
+<nav class="tabbar">
+ <button class="tab active" data-tab="attendance"><span class="gl">✓</span>Attendance</button>
+ <button class="tab" data-tab="students"><span class="gl">👥</span>Students</button>
+ <button class="tab" data-tab="reports"><span class="gl">▤</span>Cards</button>
+ <button class="tab" data-tab="settings"><span class="gl">⚙</span>Settings</button>
+</nav>
+<section class="panel active" id="attendance">
+ <div class="card glass">
+  <div class="sectionhead"><div><h2>Mark attendance</h2><div class="sub">One attendance record per student per day</div></div><button class="btn primary" id="markAll">Mark all present</button></div>
+  <div class="toolbar">
+   <div class="field"><label for="attDate">Date</label><input type="date" id="attDate"></div>
+   <div class="field" style="display:none"><label for="attClass">Class / group</label><select id="attClass"><option value="all">Everyone</option><option value="__unassigned">No class assigned</option></select></div>
+   <div class="field" style="flex:1;min-width:160px"><input id="attSearch" placeholder="Find student by name or roll"></div>
+  </div>
+  <div class="tablewrap"><table><thead><tr><th>Student</th><th>Attendance</th></tr></thead><tbody id="attendanceRows"></tbody></table></div>
+  <div class="sub" id="attendanceFoot" style="margin-top:12px"></div>
+ </div>
+</section>
+<section class="panel" id="students">
+ <div class="grid2">
+  <div class="card glass">
+   <div class="sectionhead"><div><h2 id="studentFormTitle">Add student</h2><div class="sub">Class is optional</div></div></div>
+   <form id="studentForm">
+    <div class="formgrid">
+     <div class="field full"><label>Student name *</label><input id="sName" required maxlength="70" placeholder="Full name"></div>
+     <div class="field"><label>Class / group</label><input id="sClass" maxlength="30" placeholder="e.g. Class 8"></div>
+     <div class="field"><label>Roll number</label><input id="sRoll" maxlength="25" placeholder="Optional"></div>
+     <div class="field"><label>Parent contact</label><input id="sPhone" inputmode="tel" maxlength="20" placeholder="Optional"></div>
+     <div class="field"><label>Admission date</label><input id="sJoin" type="date"></div>
+    </div>
+    <div class="actions" style="margin-top:14px"><button class="btn primary" type="submit" id="saveStudent">Save student</button><button class="btn" type="button" id="cancelEdit" hidden>Cancel</button></div>
+   </form>
+  </div>
+  <div class="card glass">
+   <div class="sectionhead"><div><h2>Student directory</h2><div class="sub" id="directoryCount">0 students</div></div></div>
+   <div class="toolbar"><input id="studentSearch" placeholder="Search students..." style="width:100%"><select id="studentClassFilter" style="width:100%"><option value="all">All classes and groups</option></select></div>
+   <div class="list" id="studentList"></div>
+  </div>
+ </div>
+</section>
+<section class="panel" id="reports">
+ <div class="card glass reportprint">
+  <div class="sectionhead no-print"><div><h2>Monthly attendance cards</h2><div class="sub">Generate an individual card or print a class report</div></div></div>
+  <div class="toolbar no-print">
+   <div class="field"><label>Month</label><input type="month" id="reportMonth"></div>
+   <div class="field" style="flex:1;min-width:180px"><label>Student</label><select id="reportStudent"><option value="">Choose a student</option></select></div>
+   <button class="btn primary" id="generateCard">Generate card</button>
+   <button class="btn" id="printCard">Print / Save PDF</button>
+  </div>
+  <div class="printtitle" style="display:none;text-align:center;margin-bottom:15px"><h2>Anant Education · Monthly Attendance</h2></div>
+  <div id="reportOutput"><div class="empty">Choose a month and student, then generate an attendance card.</div></div>
+ </div>
+</section>
+<section class="panel" id="settings">
+ <div class="card glass"><h2 style="margin-top:0">Appearance</h2><p class="sub">Choose light, dark, or follow your phone's setting.</p><div class="seg"><button data-theme-choice="system" class="on">System</button><button data-theme-choice="light">Light</button><button data-theme-choice="dark">Dark</button></div></div>
+ <div class="grid2">
+  <div class="card glass"><h2 style="margin-top:0">Coaching details</h2><div class="field"><label>Institute name on cards</label><input id="instituteName" value="Anant Education"></div><div class="field" style="margin-top:10px"><label>Low attendance alert threshold (%)</label><input id="threshold" type="number" min="1" max="100" value="75"></div><button class="btn primary" id="saveSettings" style="margin-top:13px">Save settings</button></div>
+  <div class="card glass"><h2 style="margin-top:0">Data & privacy</h2><p class="sub">Student records and attendance are saved in this browser on this device. No account or internet connection is needed for daily use.</p><div class="actions"><button class="btn" id="exportBtn2">Download backup</button><button class="btn" id="importBtn2">Restore backup</button></div><div class="hint">Important: browser data can be cleared by device cleanup or browser reset. Download a backup regularly and keep it somewhere safe.</div><button class="btn danger" id="clearData">Delete all app data</button></div>
+ </div>
+</section>
+<div class="foot">Attendance Marker · Records stay on this device</div>
+</div>
+<div class="modal" id="confirmModal"><div class="dialog"><div class="dialoghead"><h2 id="confirmTitle">Confirm action</h2><button class="close" id="confirmClose">×</button></div><p id="confirmText"></p><div class="actions"><button class="btn" id="confirmCancel">Cancel</button><button class="btn danger" id="confirmYes">Continue</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+(()=> {
+const $=id=>document.getElementById(id);
+const KEY='anantAttendance.v1';
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const monthNow=()=>today().slice(0,7);
+let data={students:[],attendance:{},settings:{institute:'Anant Education',threshold:75}};
+let editingId=null, pendingConfirm=null, deferredPrompt=null;
+try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&Array.isArray(saved.students)&&saved.attendance)data={...data,...saved,settings:{...data.settings,...saved.settings}}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));return true}catch(e){toast('Storage is full. Export a backup and remove unused photos or records.');return false}};
+const uid=()=>`s${Date.now().toString(36)}${Math.random().toString(36).slice(2,7)}`;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cls=s=>(s||'').trim();
+const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)};
+const fmtDate=s=>new Date(s+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+const initials=n=>n.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+const statuses=['P','A','L'];
+const record=(id,date)=>data.attendance[date]?.[id]||'';
+const setStatus=(id,date,status)=>{data.attendance[date]??={};if(status)data.attendance[date][id]=status;else delete data.attendance[date][id];if(!Object.keys(data.attendance[date]).length)delete data.attendance[date];save();renderAttendance();renderDashboard()};
+const activeStudents=()=>data.students.filter(s=>!s.archived);
+function setTab(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===name));if(name==='reports')refreshReportSelect();if(name==='students')renderStudents()}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+$('attDate').value=today();$('reportMonth').value=monthNow();$('sJoin').value=today();
+function renderDashboard(){const all=activeStudents(),date=$('attDate').value||today(),vals=all.map(s=>record(s.id,date));$('totalStudents').textContent=all.length;$('presentToday').textContent=vals.filter(v=>v==='P').length;$('absentToday').textContent=vals.filter(v=>v==='A').length;$('unmarkedToday').textContent=vals.filter(v=>!v).length;$('todayLabel').textContent='DAILY ATTENDANCE · '+fmtDate(date).toUpperCase();$('heroDate').textContent=new Date(date+'T00:00:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});}
+function classes(){return [...new Set(activeStudents().map(s=>cls(s.className)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}))}
+function refreshClassOptions(){const opts=classes();const fill=(el,allText)=>{const old=el.value;el.innerHTML=`<option value="all">${allText}</option><option value="__unassigned">No class assigned</option>`+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old};fill($('attClass'),'Everyone');const f=$('studentClassFilter'),old=f.value;f.innerHTML='<option value="all">All classes and groups</option>'+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...f.options].some(o=>o.value===old))f.value=old;}
+function renderAttendance(){const date=$('attDate').value||today(),filter=$('attClass').value,search=$('attSearch').value.toLowerCase().trim();let list=activeStudents().filter(s=>(filter==='all'||(filter==='__unassigned'?!cls(s.className):cls(s.className)===filter))&&(`${s.name} ${s.roll||''}`.toLowerCase().includes(search)));list.sort((a,b)=>(a.className||'').localeCompare(b.className||'')||a.name.localeCompare(b.name));$('attendanceRows').innerHTML=list.length?list.map(s=>`<tr><td><div class="studentname">${esc(s.name)}</div><div class="studentmeta">${esc(s.className||'No class')} · ${s.roll?'Roll '+esc(s.roll):'No roll'}</div></td><td><div class="statusgroup">${statuses.map(v=>`<button class="status ${record(s.id,date)===v?'on':''}" data-v="${v}" data-id="${s.id}" aria-label="${v==='P'?'Present':v==='A'?'Absent':'Leave'}">${v}</button>`).join('')}</div></td></tr>`).join(''):'<tr><td colspan="2" class="empty">No students yet. Add them in Students.</td></tr>';$('attendanceFoot').textContent=`${list.length} student${list.length===1?'':'s'} · P Present · A Absent · L Leave`;renderDashboard()}
+$('attendanceRows').addEventListener('click',e=>{const b=e.target.closest('button[data-id]');if(!b)return;const id=b.dataset.id,date=$('attDate').value,v=b.dataset.v;setStatus(id,date,record(id,date)===v?'':v)});
+$('attDate').addEventListener('change',()=>{renderAttendance();renderDashboard()});$('attClass').addEventListener('change',renderAttendance);$('attSearch').addEventListener('input',renderAttendance);
+$('markAll').addEventListener('click',()=>{const date=$('attDate').value||today(),filter=$('attClass').value;const list=activeStudents().filter(s=>filter==='all'||(filter==='__unassigned'?!cls(s.className):cls(s.className)===filter));if(!list.length)return toast('No students in this selection.');data.attendance[date]??={};list.forEach(s=>data.attendance[date][s.id]='P');save();renderAttendance();toast(`Marked ${list.length} students present.`)});
+function resetForm(){editingId=null;$('studentForm').reset();$('sJoin').value=today();$('studentFormTitle').textContent='Add student';$('saveStudent').textContent='Save student';$('cancelEdit').hidden=true}
+$('studentForm').addEventListener('submit',e=>{e.preventDefault();const name=$('sName').value.trim();if(!name)return;const item={id:editingId||uid(),name,className:cls($('sClass').value),roll:$('sRoll').value.trim(),phone:$('sPhone').value.trim(),joined:$('sJoin').value||today()};if(editingId){data.students=data.students.map(s=>s.id===editingId?{...s,...item}:s)}else data.students.push(item);save();resetForm();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();toast(editingId?'Student updated.':'Student added.')});
+$('cancelEdit').addEventListener('click',resetForm);
+function renderStudents(){const q=$('studentSearch').value.toLowerCase().trim(),f=$('studentClassFilter').value;const list=activeStudents().filter(s=>(f==='all'||cls(s.className)===f)&&(`${s.name} ${s.roll||''} ${s.phone||''}`.toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));$('directoryCount').textContent=`${activeStudents().length} active students`;$('studentList').innerHTML=list.length?list.map(s=>`<div class="studentrow"><div class="studentleft"><div class="avatar">${esc(initials(s.name))}</div><div style="min-width:0"><strong>${esc(s.name)}</strong><small>${esc(s.className||'No class')} · ${s.roll?'Roll '+esc(s.roll):'No roll number'}</small></div></div><div class="actions"><button class="btn" data-edit="${s.id}">Edit</button><button class="btn danger" data-archive="${s.id}">Remove</button></div></div>`).join(''):'<div class="empty">No students yet. Add your first student using the form.</div>'}
+$('studentSearch').addEventListener('input',renderStudents);$('studentClassFilter').addEventListener('change',renderStudents);
+$('studentList').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]')?.dataset.edit,del=e.target.closest('[data-archive]')?.dataset.archive;if(edit){const s=data.students.find(x=>x.id===edit);if(!s)return;editingId=s.id;$('sName').value=s.name;$('sClass').value=s.className||'';$('sRoll').value=s.roll||'';$('sPhone').value=s.phone||'';$('sJoin').value=s.joined||'';$('studentFormTitle').textContent='Edit student';$('saveStudent').textContent='Update student';$('cancelEdit').hidden=false;window.scrollTo({top:0,behavior:'smooth'})}if(del){const s=data.students.find(x=>x.id===del);confirmAction('Remove student',`Remove ${s?.name||'this student'} from the active directory? Their past attendance records will be kept in your data backup but will no longer appear in reports.`,()=>{data.students=data.students.map(x=>x.id===del?{...x,archived:true}:x);save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();toast('Student removed from active list.')})}});
+function refreshReportSelect(){const sel=$('reportStudent'),old=sel.value;sel.innerHTML='<option value="">Choose a student</option>'+activeStudents().slice().sort((a,b)=>a.name.localeCompare(b.name)).map(s=>`<option value="${s.id}">${esc(s.name)}${s.className?' · '+esc(s.className):''}</option>`).join('');if([...sel.options].some(o=>o.value===old))sel.value=old}
+function monthRecords(id,month){const days=Object.keys(data.attendance).filter(d=>d.startsWith(month)).sort();let p=0,a=0,l=0,marked=0;const detail=[];days.forEach(d=>{const v=data.attendance[d]?.[id];if(v){marked++;if(v==='P')p++;if(v==='A')a++;if(v==='L')l++;detail.push({date:d,status:v})}});const counted=p+a,pct=counted?Math.round(p/counted*100):0;return{p,a,l,marked,counted,pct,detail}}
+$('generateCard').addEventListener('click',generateCard);
+function generateCard(){const id=$('reportStudent').value,month=$('reportMonth').value;if(!id||!month)return toast('Choose a student and month first.');const s=data.students.find(x=>x.id===id);if(!s)return;const r=monthRecords(id,month),threshold=Number(data.settings.threshold)||75,monthName=new Date(month+'-01T00:00:00').toLocaleDateString(undefined,{month:'long',year:'numeric'});$('reportOutput').innerHTML=`<div style="max-width:720px;margin:0 auto;border:1px solid #e5eaf5;border-radius:20px;padding:22px;background:#fff"><div style="display:flex;justify-content:space-between;align-items:start;gap:12px"><div><div style="font-size:11px;letter-spacing:1.3px;color:#7c8aa8;text-transform:uppercase">${esc(data.settings.institute||'Anant Education')}</div><h2 style="margin:5px 0;font-size:24px">${esc(s.name)}</h2><div style="color:#7d879b;font-size:13px">${esc(s.className||'No class assigned')} ${s.roll?'· Roll '+esc(s.roll):''}</div></div><div style="text-align:right"><div style="font-size:11px;color:#7d879b">MONTHLY ATTENDANCE</div><b>${esc(monthName)}</b></div></div><div style="margin:20px 0;padding:18px;border-radius:17px;background:linear-gradient(120deg,#557cf4,#9275e9);color:white"><div style="font-size:12px;opacity:.85">ATTENDANCE PERCENTAGE</div><div style="font-size:42px;font-weight:800;letter-spacing:-1px">${r.pct}%</div><div style="font-size:12px;opacity:.85">${r.pct>=threshold?'Meeting the attendance threshold':'Below '+threshold+'% attendance threshold'}</div></div><div class="reportgrid"><div class="reportstat"><small>Present</small><b style="color:#15966b">${r.p}</b></div><div class="reportstat"><small>Absent</small><b style="color:#d85e6b">${r.a}</b></div><div class="reportstat"><small>On leave</small><b style="color:#bd862f">${r.l}</b></div></div><div style="display:flex;justify-content:space-between;color:#7d879b;font-size:12px"><span>Marked attendance days: <b style="color:#172033">${r.marked}</b></span><span>Percentage basis: Present ÷ (Present + Absent)</span></div><div class="progress"><i style="width:${r.pct}%"></i></div><div style="margin-top:18px;border-top:1px solid #edf0f6;padding-top:12px;font-size:11px;color:#8993a8;display:flex;justify-content:space-between"><span>Generated on ${fmtDate(today())}</span><span>Parent contact: ${esc(s.phone||'Not provided')}</span></div></div>${r.detail.length?`<h3 style="font-size:15px;margin:20px 0 9px">Daily record</h3><div class="tablewrap"><table id="reportTable"><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>${r.detail.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${x.status==='P'?'Present':x.status==='A'?'Absent':'Leave'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No attendance has been marked for this student in this month.</div>'}`;toast('Monthly card generated.')}
+$('printCard').addEventListener('click',()=>{if(!$('reportOutput').querySelector('h2'))return toast('Generate a card first.');window.print()});
+function exportData(){const blob=new Blob([JSON.stringify({...data,exportedAt:new Date().toISOString(),app:'Anant Attendance'},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`anant-attendance-backup-${today()}.json`;a.click();URL.revokeObjectURL(a.href);toast('Backup downloaded.')}
+$('exportBtn').addEventListener('click',exportData);$('exportBtn2').addEventListener('click',exportData);
+function chooseImport(){$('importFile').click()}$('importBtn').addEventListener('click',chooseImport);$('importBtn2').addEventListener('click',chooseImport);
+$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!Array.isArray(obj.students)||!obj.attendance||typeof obj.attendance!=='object')throw Error('Invalid backup');confirmAction('Restore backup','This replaces the current student and attendance data with the selected backup.',()=>{data={students:obj.students,attendance:obj.attendance,settings:{...data.settings,...obj.settings}};save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();toast('Backup restored.')})}catch(err){toast('Could not read that backup file.')}e.target.value=''});
+function confirmAction(title,message,fn){$('confirmTitle').textContent=title;$('confirmText').textContent=message;pendingConfirm=fn;$('confirmModal').classList.add('open')}
+function closeConfirm(){$('confirmModal').classList.remove('open');pendingConfirm=null}
+$('confirmClose').addEventListener('click',closeConfirm);$('confirmCancel').addEventListener('click',closeConfirm);$('confirmYes').addEventListener('click',()=>{const fn=pendingConfirm;closeConfirm();fn?.()});
+$('instituteName').value=data.settings.institute||'Anant Education';$('threshold').value=data.settings.threshold||75;
+$('saveSettings').addEventListener('click',()=>{data.settings.institute=$('instituteName').value.trim()||'Anant Education';data.settings.threshold=Math.max(1,Math.min(100,Number($('threshold').value)||75));save();toast('Settings saved.')});
+$('clearData').addEventListener('click',()=>confirmAction('Delete all app data','This permanently deletes all students, attendance records and settings from this browser. Download a backup first if you may need this data.',()=>{localStorage.removeItem(KEY);data={students:[],attendance:{},settings:{institute:'Anant Education',threshold:75}};refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();toast('All app data deleted.')}));
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.add('show')});
+$('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return toast('Use your browser menu and choose Install app / Add to Home screen.');deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.remove('show')});
+if('serviceWorker'in navigator && location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+const THEME_KEY='anantAttendance.theme';
+function applyTheme(c){const r=document.documentElement;if(c==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',c);document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('on',b.dataset.themeChoice===c));try{localStorage.setItem(THEME_KEY,c)}catch(e){}}
+document.querySelectorAll('[data-theme-choice]').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.themeChoice)));
+applyTheme(localStorage.getItem(THEME_KEY)||'system');
+refreshClassOptions();renderAttendance();renderStudents();refreshReportSelect();renderDashboard();
+})();
+</script>
+</body></html>
