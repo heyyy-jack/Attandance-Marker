@@ -40,3 +40,10 @@ Marks and monthly report cards:
 - Open Marks to enter monthly marks for English, Hindi, Mathematics, Science, Social Science, Computer, and General Knowledge (each out of 100).
 - Open Report to generate and print/save a monthly academic report card with subject marks, percentage, grade, and attendance summary.
 - Marks are stored locally in this browser and included in JSON backups.
+
+
+Latest update:
+- App name changed to Manager.
+- Settings includes the institute name used on generated attendance and academic report cards.
+- Settings displays the creator credit: Made by Raj.
+- Report cards use a refreshed premium blue layout.
