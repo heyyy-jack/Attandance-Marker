@@ -51,7 +51,7 @@ button{cursor:pointer}
 .stat strong{display:block;font-size:19px;margin-top:2px;font-variant-numeric:tabular-nums}
 
 /* Floating glass tab bar */
-.tabbar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);max-width:736px;margin:0 auto;display:flex;justify-content:space-around;gap:2px;padding:6px;border-radius:30px;background:var(--card);border:1px solid var(--edge);box-shadow:0 12px 34px rgba(0,0,0,.14),var(--hi);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);z-index:10}
+.tabbar{overflow-x:auto;scrollbar-width:none}.tabbar::-webkit-scrollbar{display:none}.tab{min-width:58px;white-space:nowrap}.tabbar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);max-width:736px;margin:0 auto;display:flex;justify-content:space-around;gap:2px;padding:6px;border-radius:30px;background:var(--card);border:1px solid var(--edge);box-shadow:0 12px 34px rgba(0,0,0,.14),var(--hi);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);z-index:10}
 .tab{flex:1;border:0;background:transparent;color:var(--label2);padding:7px 4px;border-radius:22px;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px}
 .tab .gl{font-size:18px;line-height:1}
 .tab.active{color:var(--blue);background:var(--tabon);box-shadow:var(--hi)}
@@ -133,7 +133,7 @@ tr:last-child td{border-bottom:0}
 
 @media(max-width:760px){.grid2{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}.reportgrid{grid-template-columns:repeat(3,1fr)}.hero h2{font-size:22px}.stats{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:420px){.brand h1{font-size:23px}.brand small{font-size:11px}.logo{width:38px;height:38px}.stats .stat strong{font-size:19px}.reportstat{padding:10px}.reportstat b{font-size:18px}}
-@media print{body{background:#fff!important}body::before{display:none}.tabbar,.toast,.modal{display:none!important}.app>*:not(#reports),#reports .no-print{display:none!important}#reports{display:block!important}.reportprint{box-shadow:none!important;border:0!important;background:#fff!important;padding:0!important}.reportprint .tablewrap{overflow:visible}#reportTable{min-width:0}#reportTable th,#reportTable td{font-size:10px;padding:7px}.printtitle{display:block!important}}
+.marksgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.markfield{display:grid;gap:5px;padding:11px;border-radius:14px;background:var(--fill)}.markfield label{font-size:13px;color:var(--label2);font-weight:600}.markfield input{width:100%}.gradechip{display:inline-block;padding:5px 10px;border-radius:20px;background:#e8efff;color:#2454b8;font-weight:700;font-size:12px}@media(max-width:420px){.marksgrid{grid-template-columns:1fr}}\n@media print{body{background:#fff!important}body::before{display:none}.tabbar,.toast,.modal{display:none!important}.app>*:not(#reports),#reports .no-print{display:none!important}#reports{display:block!important}.reportprint{box-shadow:none!important;border:0!important;background:#fff!important;padding:0!important}.reportprint .tablewrap{overflow:visible}#reportTable{min-width:0}#reportTable th,#reportTable td{font-size:10px;padding:7px}.printtitle{display:block!important}}
 </style>
 </head>
 <body>
@@ -155,7 +155,9 @@ tr:last-child td{border-bottom:0}
  <button class="tab active" data-tab="attendance"><span class="gl">✓</span>Attendance</button>
  <button class="tab" data-tab="daywise"><span class="gl">▦</span>Day-wise</button>
  <button class="tab" data-tab="students"><span class="gl">👥</span>Students</button>
- <button class="tab" data-tab="reports"><span class="gl">▤</span>Cards</button>
+ <button class="tab" data-tab="marks"><span class="gl">✎</span>Marks</button>
+ <button class="tab" data-tab="marksReport"><span class="gl">▤</span>Report</button>
+ <button class="tab" data-tab="reports"><span class="gl">▧</span>Att. Cards</button>
  <button class="tab" data-tab="settings"><span class="gl">⚙</span>Settings</button>
 </nav>
 <section class="panel active" id="attendance">
@@ -183,6 +185,31 @@ tr:last-child td{border-bottom:0}
   <div id="daywiseRecords"><div class="empty">No attendance records found.</div></div>
  </div>
 </section>
+
+<section class="panel" id="marks">
+ <div class="card glass">
+  <div class="sectionhead"><div><h2>Enter student marks</h2><div class="sub">Monthly subject marks · each subject is out of 100</div></div></div>
+  <div class="toolbar">
+   <div class="field"><label for="marksMonth">Month</label><input type="month" id="marksMonth"></div>
+   <div class="field" style="flex:1;min-width:180px"><label for="marksStudent">Student</label><select id="marksStudent"><option value="">Choose a student</option></select></div>
+  </div>
+  <div id="marksEntry"><div class="empty">Choose a student to enter marks.</div></div>
+ </div>
+</section>
+<section class="panel" id="marksReport">
+ <div class="card glass reportprint">
+  <div class="sectionhead no-print"><div><h2>Monthly academic report card</h2><div class="sub">Subject-wise performance with attendance summary</div></div></div>
+  <div class="toolbar no-print">
+   <div class="field"><label for="marksReportMonth">Month</label><input type="month" id="marksReportMonth"></div>
+   <div class="field" style="flex:1;min-width:180px"><label for="marksReportStudent">Student</label><select id="marksReportStudent"><option value="">Choose a student</option></select></div>
+   <button class="btn primary" id="generateMarksReport">Generate report</button>
+   <button class="btn" id="printMarksReport">Print / Save PDF</button>
+  </div>
+  <div class="printtitle" style="display:none;text-align:center;margin-bottom:15px"><h2>Anant Education · Monthly Report Card</h2></div>
+  <div id="marksReportOutput"><div class="empty">Choose a month and student, then generate the report card.</div></div>
+ </div>
+</section>
+
 <section class="panel" id="students">
  <div class="grid2">
   <div class="card glass">
@@ -235,9 +262,9 @@ const $=id=>document.getElementById(id);
 const KEY='anantAttendance.v1';
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const monthNow=()=>today().slice(0,7);
-let data={students:[],attendance:{},settings:{institute:'Anant Education',threshold:75}};
+let data={students:[],attendance:{},marks:{},settings:{institute:'Anant Education',threshold:75}};
 let editingId=null, pendingConfirm=null, deferredPrompt=null;
-try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&Array.isArray(saved.students)&&saved.attendance)data={...data,...saved,settings:{...data.settings,...saved.settings}}}catch(e){}
+try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&Array.isArray(saved.students)&&saved.attendance)data={...data,...saved,marks:saved.marks||{},settings:{...data.settings,...saved.settings}}}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));return true}catch(e){toast('Storage is full. Export a backup and remove unused photos or records.');return false}};
 const uid=()=>`s${Date.now().toString(36)}${Math.random().toString(36).slice(2,7)}`;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -249,9 +276,9 @@ const statuses=['P','A','L'];
 const record=(id,date)=>data.attendance[date]?.[id]||'';
 const setStatus=(id,date,status)=>{data.attendance[date]??={};if(status)data.attendance[date][id]=status;else delete data.attendance[date][id];if(!Object.keys(data.attendance[date]).length)delete data.attendance[date];save();renderAttendance();renderDashboard();if($('daywise').classList.contains('active'))renderDaywise()};
 const activeStudents=()=>data.students.filter(s=>!s.archived);
-function setTab(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===name));if(name==='reports')refreshReportSelect();if(name==='students')renderStudents();if(name==='daywise')renderDaywise()}
+function setTab(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===name));if(name==='reports')refreshReportSelect();if(name==='students')renderStudents();if(name==='daywise')renderDaywise();if(name==='marks'||name==='marksReport')refreshMarksStudents()}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
-$('attDate').value=today();$('reportMonth').value=monthNow();$('daywiseMonth').value=monthNow();$('sJoin').value=today();
+$('attDate').value=today();$('reportMonth').value=monthNow();$('daywiseMonth').value=monthNow();$('marksMonth').value=monthNow();$('marksReportMonth').value=monthNow();$('sJoin').value=today();
 function renderDashboard(){const all=activeStudents(),date=$('attDate').value||today(),vals=all.map(s=>record(s.id,date));$('totalStudents').textContent=all.length;$('presentToday').textContent=vals.filter(v=>v==='P').length;$('absentToday').textContent=vals.filter(v=>v==='A').length;$('unmarkedToday').textContent=vals.filter(v=>!v).length;$('todayLabel').textContent='DAILY ATTENDANCE · '+fmtDate(date).toUpperCase();$('heroDate').textContent=new Date(date+'T00:00:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});}
 function classes(){return [...new Set(activeStudents().map(s=>cls(s.className)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}))}
 function refreshClassOptions(){const opts=classes();const fill=(el,allText)=>{const old=el.value;el.innerHTML=`<option value="all">${allText}</option><option value="__unassigned">No class assigned</option>`+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old};fill($('attClass'),'Everyone');const f=$('studentClassFilter'),old=f.value;f.innerHTML='<option value="all">All classes and groups</option>'+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...f.options].some(o=>o.value===old))f.value=old;const df=$('daywiseClass'),dold=df.value;df.innerHTML='<option value="all">All classes</option><option value="__unassigned">No class assigned</option>'+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...df.options].some(o=>o.value===dold))df.value=dold;}
@@ -260,7 +287,7 @@ $('attendanceRows').addEventListener('click',e=>{const b=e.target.closest('butto
 $('attDate').addEventListener('change',()=>{renderAttendance();renderDashboard()});$('attClass').addEventListener('change',renderAttendance);$('attSearch').addEventListener('input',renderAttendance);
 $('markAll').addEventListener('click',()=>{const date=$('attDate').value||today(),filter=$('attClass').value;const list=activeStudents().filter(s=>filter==='all'||(filter==='__unassigned'?!cls(s.className):cls(s.className)===filter));if(!list.length)return toast('No students in this selection.');data.attendance[date]??={};list.forEach(s=>data.attendance[date][s.id]='P');save();renderAttendance();toast(`Marked ${list.length} students present.`)});
 function resetForm(){editingId=null;$('studentForm').reset();$('sJoin').value=today();$('studentFormTitle').textContent='Add student';$('saveStudent').textContent='Save student';$('cancelEdit').hidden=true}
-$('studentForm').addEventListener('submit',e=>{e.preventDefault();const name=$('sName').value.trim();if(!name)return;const item={id:editingId||uid(),name,className:cls($('sClass').value),roll:$('sRoll').value.trim(),phone:$('sPhone').value.trim(),joined:$('sJoin').value||today()};if(editingId){data.students=data.students.map(s=>s.id===editingId?{...s,...item}:s)}else data.students.push(item);save();resetForm();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();toast(editingId?'Student updated.':'Student added.')});
+$('studentForm').addEventListener('submit',e=>{e.preventDefault();const name=$('sName').value.trim();if(!name)return;const item={id:editingId||uid(),name,className:cls($('sClass').value),roll:$('sRoll').value.trim(),phone:$('sPhone').value.trim(),joined:$('sJoin').value||today()};if(editingId){data.students=data.students.map(s=>s.id===editingId?{...s,...item}:s)}else data.students.push(item);save();resetForm();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();refreshMarksStudents();toast(editingId?'Student updated.':'Student added.')});
 $('cancelEdit').addEventListener('click',resetForm);
 function renderStudents(){const q=$('studentSearch').value.toLowerCase().trim(),f=$('studentClassFilter').value;const list=activeStudents().filter(s=>(f==='all'||cls(s.className)===f)&&(`${s.name} ${s.roll||''} ${s.phone||''}`.toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));$('directoryCount').textContent=`${activeStudents().length} active students`;$('studentList').innerHTML=list.length?list.map(s=>`<div class="studentrow"><div class="studentleft"><div class="avatar">${esc(initials(s.name))}</div><div style="min-width:0"><strong>${esc(s.name)}</strong><small>${esc(s.className||'No class')} · ${s.roll?'Roll '+esc(s.roll):'No roll number'}</small></div></div><div class="actions"><button class="btn" data-edit="${s.id}">Edit</button><button class="btn danger" data-archive="${s.id}">Remove</button></div></div>`).join(''):'<div class="empty">No students yet. Add your first student using the form.</div>'}
 $('studentSearch').addEventListener('input',renderStudents);$('studentClassFilter').addEventListener('change',renderStudents);
@@ -288,6 +315,58 @@ function renderDaywise(){
 $('daywiseMonth').addEventListener('change',renderDaywise);$('daywiseClass').addEventListener('change',renderDaywise);$('daywiseSearch').addEventListener('input',renderDaywise);
 $('daywiseAllDates').addEventListener('click',()=>{$('daywiseMonth').value='';renderDaywise()});
 $('exportDaywise').addEventListener('click',()=>{const rows=daywiseEntries();if(!rows.length)return toast('No records to export.');const csv=[['Date','Student','Class / group','Roll number','Status'],...rows.map(x=>[x.date,x.student.name,x.student.className||'',x.student.roll||'',x.status==='P'?'Present':x.status==='A'?'Absent':'Leave'])].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`anant-day-wise-attendance-${today()}.csv`;a.click();URL.revokeObjectURL(a.href);toast('Day-wise CSV exported.')});
+
+const SUBJECTS=['English','Hindi','Mathematics','Science','Social Science','Computer','General Knowledge'];
+function refreshMarksStudents(){
+ const fill=sel=>{const old=sel.value;sel.innerHTML='<option value="">Choose a student</option>'+activeStudents().slice().sort((a,b)=>a.name.localeCompare(b.name)).map(s=>`<option value="${s.id}">${esc(s.name)}${s.className?' · '+esc(s.className):''}</option>`).join('');if([...sel.options].some(o=>o.value===old))sel.value=old};
+ fill($('marksStudent'));fill($('marksReportStudent'));
+ if($('marksStudent').value)renderMarksEntry();
+}
+function getMarkSet(month,id){return data.marks?.[month]?.[id]||{}}
+function renderMarksEntry(){
+ const id=$('marksStudent').value,month=$('marksMonth').value;
+ if(!id||!month){$('marksEntry').innerHTML='<div class="empty">Choose a student and month to enter marks.</div>';return}
+ const saved=getMarkSet(month,id);
+ $('marksEntry').innerHTML=`<div class="sub" style="margin:4px 0 12px">Enter marks from 0 to 100 for each subject. Leave a field blank if the subject was not assessed.</div><div class="marksgrid">${SUBJECTS.map((sub,i)=>`<div class="markfield"><label for="mark_${i}">${sub} <span class="muted">/ 100</span></label><input type="number" id="mark_${i}" min="0" max="100" step="1" inputmode="numeric" placeholder="Enter marks" value="${saved[sub]??''}"></div>`).join('')}</div><div class="actions" style="margin-top:14px"><button class="btn primary" id="saveMarks">Save marks</button><button class="btn" id="clearMarks">Clear marks</button></div>`;
+ $('saveMarks').addEventListener('click',()=>{
+  const scores={};
+  for(let i=0;i<SUBJECTS.length;i++){const el=$(`mark_${i}`),raw=el.value.trim();if(raw==='')continue;const n=Number(raw);if(!Number.isFinite(n)||n<0||n>100)return toast(`Enter a valid mark between 0 and 100 for ${SUBJECTS[i]}.`);scores[SUBJECTS[i]]=n}
+  data.marks??={};data.marks[month]??={};
+  if(Object.keys(scores).length)data.marks[month][id]=scores;else delete data.marks[month][id];
+  if(data.marks[month]&&!Object.keys(data.marks[month]).length)delete data.marks[month];
+  save();toast('Marks saved successfully.');
+ });
+ $('clearMarks').addEventListener('click',()=>confirmAction('Clear marks','Remove all saved subject marks for this student and month?',()=>{if(data.marks?.[month]){delete data.marks[month][id];if(!Object.keys(data.marks[month]).length)delete data.marks[month];save()}renderMarksEntry();toast('Marks cleared.')}));
+}
+$('marksStudent').addEventListener('change',renderMarksEntry);
+$('marksMonth').addEventListener('change',renderMarksEntry);
+$('marksReportStudent').addEventListener('change',()=>{});
+$('marksReportMonth').addEventListener('change',()=>{});
+function generateMarksReport(){
+ const id=$('marksReportStudent').value,month=$('marksReportMonth').value;
+ if(!id||!month)return toast('Choose a student and month first.');
+ const student=data.students.find(s=>s.id===id);if(!student)return;
+ const scores=getMarkSet(month,id),entries=SUBJECTS.filter(s=>scores[s]!==undefined).map(s=>({subject:s,mark:Number(scores[s])}));
+ if(!entries.length)return toast('No marks saved for this student in the selected month.');
+ const total=entries.reduce((sum,x)=>sum+x.mark,0),max=entries.length*100,pct=total/max*100;
+ const grade=pct>=90?'A+':pct>=80?'A':pct>=70?'B':pct>=60?'C':pct>=50?'D':pct>=33?'E':'Needs Improvement';
+ const attendanceDays=Object.keys(data.attendance||{}).filter(d=>d.startsWith(month));
+ let present=0,absent=0,leave=0;
+ attendanceDays.forEach(d=>{const v=data.attendance[d]?.[id];if(v==='P')present++;if(v==='A')absent++;if(v==='L')leave++});
+ const monthName=new Date(month+'-01T00:00:00').toLocaleDateString(undefined,{month:'long',year:'numeric'});
+ $('marksReportOutput').innerHTML=`<div style="max-width:720px;margin:0 auto;border:1px solid #e5eaf5;border-radius:20px;padding:22px;background:#fff;color:#172033">
+  <div style="text-align:center;border-bottom:2px solid #e8edf7;padding-bottom:14px"><div style="font-size:12px;letter-spacing:1.5px;color:#71809b;text-transform:uppercase">${esc(data.settings.institute||'Anant Education')}</div><h2 style="margin:5px 0;font-size:25px">Monthly Report Card</h2><div style="color:#71809b">${esc(monthName)}</div></div>
+  <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0"><div><b style="font-size:19px">${esc(student.name)}</b><div style="font-size:13px;color:#71809b">${esc(student.className||'No class assigned')}${student.roll?' · Roll '+esc(student.roll):''}</div></div><div style="text-align:right;font-size:13px;color:#71809b">REPORTING MONTH<br><b style="color:#172033">${esc(monthName)}</b></div></div>
+  <div class="tablewrap" style="border-color:#e5eaf5"><table><thead><tr><th>Subject</th><th>Marks Obtained</th><th>Maximum Marks</th></tr></thead><tbody>${entries.map(x=>`<tr><td style="font-weight:600">${esc(x.subject)}</td><td>${x.mark}</td><td>100</td></tr>`).join('')}</tbody><tfoot><tr><th>Total</th><th>${total}</th><th>${max}</th></tr></tfoot></table></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0"><div style="background:#f1f5ff;padding:12px;border-radius:13px"><small style="color:#71809b">Percentage</small><div style="font-size:23px;font-weight:800">${pct.toFixed(1)}%</div></div><div style="background:#f1f5ff;padding:12px;border-radius:13px"><small style="color:#71809b">Grade</small><div style="font-size:23px;font-weight:800">${grade}</div></div><div style="background:#f1f5ff;padding:12px;border-radius:13px"><small style="color:#71809b">Subjects</small><div style="font-size:23px;font-weight:800">${entries.length}</div></div></div>
+  <h3 style="font-size:15px;margin:18px 0 8px">Attendance summary</h3><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><div style="background:#f3faf6;padding:10px;border-radius:12px"><small>Present</small><b style="display:block;color:#16865c;font-size:20px">${present}</b></div><div style="background:#fff3f3;padding:10px;border-radius:12px"><small>Absent</small><b style="display:block;color:#c84955;font-size:20px">${absent}</b></div><div style="background:#fff8e9;padding:10px;border-radius:12px"><small>Leave</small><b style="display:block;color:#a87825;font-size:20px">${leave}</b></div></div>
+  <div style="display:flex;justify-content:space-between;gap:10px;margin-top:25px;padding-top:12px;border-top:1px solid #e8edf7;color:#71809b;font-size:11px"><span>Generated on ${fmtDate(today())}</span><span>Parent signature: __________________</span></div>
+ </div>`;
+ toast('Monthly report card generated.');
+}
+$('generateMarksReport').addEventListener('click',generateMarksReport);
+$('printMarksReport').addEventListener('click',()=>{if(!$('marksReportOutput').querySelector('table'))return toast('Generate a report card first.');window.print()});
+
 function refreshReportSelect(){const sel=$('reportStudent'),old=sel.value;sel.innerHTML='<option value="">Choose a student</option>'+activeStudents().slice().sort((a,b)=>a.name.localeCompare(b.name)).map(s=>`<option value="${s.id}">${esc(s.name)}${s.className?' · '+esc(s.className):''}</option>`).join('');if([...sel.options].some(o=>o.value===old))sel.value=old}
 function monthRecords(id,month){const days=Object.keys(data.attendance).filter(d=>d.startsWith(month)).sort();let p=0,a=0,l=0,marked=0;const detail=[];days.forEach(d=>{const v=data.attendance[d]?.[id];if(v){marked++;if(v==='P')p++;if(v==='A')a++;if(v==='L')l++;detail.push({date:d,status:v})}});const counted=p+a,pct=counted?Math.round(p/counted*100):0;return{p,a,l,marked,counted,pct,detail}}
 $('generateCard').addEventListener('click',generateCard);
@@ -296,7 +375,7 @@ $('printCard').addEventListener('click',()=>{if(!$('reportOutput').querySelector
 function exportData(){const blob=new Blob([JSON.stringify({...data,exportedAt:new Date().toISOString(),app:'Anant Attendance'},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`anant-attendance-backup-${today()}.json`;a.click();URL.revokeObjectURL(a.href);toast('Backup downloaded.')}
 $('exportBtn').addEventListener('click',exportData);$('exportBtn2').addEventListener('click',exportData);
 function chooseImport(){$('importFile').click()}$('importBtn').addEventListener('click',chooseImport);$('importBtn2').addEventListener('click',chooseImport);
-$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!Array.isArray(obj.students)||!obj.attendance||typeof obj.attendance!=='object')throw Error('Invalid backup');confirmAction('Restore backup','This replaces the current student and attendance data with the selected backup.',()=>{data={students:obj.students,attendance:obj.attendance,settings:{...data.settings,...obj.settings}};save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();renderDaywise();toast('Backup restored.')})}catch(err){toast('Could not read that backup file.')}e.target.value=''});
+$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!Array.isArray(obj.students)||!obj.attendance||typeof obj.attendance!=='object')throw Error('Invalid backup');confirmAction('Restore backup','This replaces the current student and attendance data with the selected backup.',()=>{data={students:obj.students,attendance:obj.attendance,marks:obj.marks||{},settings:{...data.settings,...obj.settings}};save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();renderDaywise();toast('Backup restored.')})}catch(err){toast('Could not read that backup file.')}e.target.value=''});
 function confirmAction(title,message,fn){$('confirmTitle').textContent=title;$('confirmText').textContent=message;pendingConfirm=fn;$('confirmModal').classList.add('open')}
 function closeConfirm(){$('confirmModal').classList.remove('open');pendingConfirm=null}
 $('confirmClose').addEventListener('click',closeConfirm);$('confirmCancel').addEventListener('click',closeConfirm);$('confirmYes').addEventListener('click',()=>{const fn=pendingConfirm;closeConfirm();fn?.()});
@@ -310,7 +389,7 @@ const THEME_KEY='anantAttendance.theme';
 function applyTheme(c){const r=document.documentElement;if(c==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',c);document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('on',b.dataset.themeChoice===c));try{localStorage.setItem(THEME_KEY,c)}catch(e){}}
 document.querySelectorAll('[data-theme-choice]').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.themeChoice)));
 applyTheme(localStorage.getItem(THEME_KEY)||'system');
-refreshClassOptions();renderAttendance();renderStudents();refreshReportSelect();renderDashboard();renderDaywise();
+refreshClassOptions();renderAttendance();renderStudents();refreshReportSelect();refreshMarksStudents();renderDashboard();renderDaywise();
 })();
 </script>
 </body></html>

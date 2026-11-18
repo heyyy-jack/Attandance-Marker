@@ -34,3 +34,9 @@ DAY-WISE RECORDS
 
 NOTE
 The uploaded HTML used as the base contains a Class / group field. It does not currently contain a separate Section field.
+
+
+Marks and monthly report cards:
+- Open Marks to enter monthly marks for English, Hindi, Mathematics, Science, Social Science, Computer, and General Knowledge (each out of 100).
+- Open Report to generate and print/save a monthly academic report card with subject marks, percentage, grade, and attendance summary.
+- Marks are stored locally in this browser and included in JSON backups.
