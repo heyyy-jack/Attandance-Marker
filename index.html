@@ -104,6 +104,15 @@ tr:last-child td{border-bottom:0}
 .reportstat{padding:13px;background:var(--fill);border-radius:14px}
 .reportstat small{display:block;color:var(--label2)}
 .reportstat b{font-size:21px}
+.daygroup{padding:14px;border-radius:18px;background:var(--fill);margin:0 0 12px}
+.daygrouphead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.daygrouphead strong{font-size:16px}.daycounts{display:flex;gap:6px;flex-wrap:wrap}
+.daycount{font-size:11px;font-weight:700;padding:4px 8px;border-radius:20px;background:var(--card)}
+.daycount.p{color:var(--green)}.daycount.a{color:var(--red)}.daycount.l{color:var(--orange)}
+.dayrecord{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid var(--sep)}
+.dayrecord:first-child{border-top:0}.dayrecord small{display:block;color:var(--label2);font-size:12px;margin-top:2px}
+.daystatus{font-size:12px;font-weight:700;padding:5px 9px;border-radius:20px;white-space:nowrap}
+.daystatus.P{background:rgba(52,199,89,.16);color:var(--green)}.daystatus.A{background:rgba(255,59,48,.14);color:var(--red)}.daystatus.L{background:rgba(255,149,0,.16);color:var(--orange)}
 .foot{text-align:center;color:var(--label2);font-size:12px;margin-top:24px}
 
 /* Segmented control (theme) */
@@ -144,6 +153,7 @@ tr:last-child td{border-bottom:0}
 </section>
 <nav class="tabbar">
  <button class="tab active" data-tab="attendance"><span class="gl">✓</span>Attendance</button>
+ <button class="tab" data-tab="daywise"><span class="gl">▦</span>Day-wise</button>
  <button class="tab" data-tab="students"><span class="gl">👥</span>Students</button>
  <button class="tab" data-tab="reports"><span class="gl">▤</span>Cards</button>
  <button class="tab" data-tab="settings"><span class="gl">⚙</span>Settings</button>
@@ -158,6 +168,19 @@ tr:last-child td{border-bottom:0}
   </div>
   <div class="tablewrap"><table><thead><tr><th>Student</th><th>Attendance</th></tr></thead><tbody id="attendanceRows"></tbody></table></div>
   <div class="sub" id="attendanceFoot" style="margin-top:12px"></div>
+ </div>
+</section>
+<section class="panel" id="daywise">
+ <div class="card glass">
+  <div class="sectionhead"><div><h2>Day-wise attendance records</h2><div class="sub">Every saved attendance entry, grouped by date</div></div><button class="btn" id="exportDaywise">Export CSV</button></div>
+  <div class="toolbar">
+   <div class="field"><label for="daywiseMonth">Month</label><input type="month" id="daywiseMonth"></div>
+   <button class="btn" id="daywiseAllDates" type="button">All dates</button>
+   <div class="field"><label for="daywiseClass">Class / group</label><select id="daywiseClass"><option value="all">All classes</option></select></div>
+   <div class="field" style="flex:1;min-width:150px"><label for="daywiseSearch">Search student</label><input id="daywiseSearch" placeholder="Name or roll number"></div>
+  </div>
+  <div class="sub" id="daywiseSummary" style="margin:4px 0 12px"></div>
+  <div id="daywiseRecords"><div class="empty">No attendance records found.</div></div>
  </div>
 </section>
 <section class="panel" id="students">
@@ -224,14 +247,14 @@ const fmtDate=s=>new Date(s+'T00:00:00').toLocaleDateString(undefined,{day:'nume
 const initials=n=>n.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
 const statuses=['P','A','L'];
 const record=(id,date)=>data.attendance[date]?.[id]||'';
-const setStatus=(id,date,status)=>{data.attendance[date]??={};if(status)data.attendance[date][id]=status;else delete data.attendance[date][id];if(!Object.keys(data.attendance[date]).length)delete data.attendance[date];save();renderAttendance();renderDashboard()};
+const setStatus=(id,date,status)=>{data.attendance[date]??={};if(status)data.attendance[date][id]=status;else delete data.attendance[date][id];if(!Object.keys(data.attendance[date]).length)delete data.attendance[date];save();renderAttendance();renderDashboard();if($('daywise').classList.contains('active'))renderDaywise()};
 const activeStudents=()=>data.students.filter(s=>!s.archived);
-function setTab(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===name));if(name==='reports')refreshReportSelect();if(name==='students')renderStudents()}
+function setTab(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===name));if(name==='reports')refreshReportSelect();if(name==='students')renderStudents();if(name==='daywise')renderDaywise()}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
-$('attDate').value=today();$('reportMonth').value=monthNow();$('sJoin').value=today();
+$('attDate').value=today();$('reportMonth').value=monthNow();$('daywiseMonth').value=monthNow();$('sJoin').value=today();
 function renderDashboard(){const all=activeStudents(),date=$('attDate').value||today(),vals=all.map(s=>record(s.id,date));$('totalStudents').textContent=all.length;$('presentToday').textContent=vals.filter(v=>v==='P').length;$('absentToday').textContent=vals.filter(v=>v==='A').length;$('unmarkedToday').textContent=vals.filter(v=>!v).length;$('todayLabel').textContent='DAILY ATTENDANCE · '+fmtDate(date).toUpperCase();$('heroDate').textContent=new Date(date+'T00:00:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});}
 function classes(){return [...new Set(activeStudents().map(s=>cls(s.className)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}))}
-function refreshClassOptions(){const opts=classes();const fill=(el,allText)=>{const old=el.value;el.innerHTML=`<option value="all">${allText}</option><option value="__unassigned">No class assigned</option>`+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old};fill($('attClass'),'Everyone');const f=$('studentClassFilter'),old=f.value;f.innerHTML='<option value="all">All classes and groups</option>'+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...f.options].some(o=>o.value===old))f.value=old;}
+function refreshClassOptions(){const opts=classes();const fill=(el,allText)=>{const old=el.value;el.innerHTML=`<option value="all">${allText}</option><option value="__unassigned">No class assigned</option>`+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old};fill($('attClass'),'Everyone');const f=$('studentClassFilter'),old=f.value;f.innerHTML='<option value="all">All classes and groups</option>'+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...f.options].some(o=>o.value===old))f.value=old;const df=$('daywiseClass'),dold=df.value;df.innerHTML='<option value="all">All classes</option><option value="__unassigned">No class assigned</option>'+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...df.options].some(o=>o.value===dold))df.value=dold;}
 function renderAttendance(){const date=$('attDate').value||today(),filter=$('attClass').value,search=$('attSearch').value.toLowerCase().trim();let list=activeStudents().filter(s=>(filter==='all'||(filter==='__unassigned'?!cls(s.className):cls(s.className)===filter))&&(`${s.name} ${s.roll||''}`.toLowerCase().includes(search)));list.sort((a,b)=>(a.className||'').localeCompare(b.className||'')||a.name.localeCompare(b.name));$('attendanceRows').innerHTML=list.length?list.map(s=>`<tr><td><div class="studentname">${esc(s.name)}</div><div class="studentmeta">${esc(s.className||'No class')} · ${s.roll?'Roll '+esc(s.roll):'No roll'}</div></td><td><div class="statusgroup">${statuses.map(v=>`<button class="status ${record(s.id,date)===v?'on':''}" data-v="${v}" data-id="${s.id}" aria-label="${v==='P'?'Present':v==='A'?'Absent':'Leave'}">${v}</button>`).join('')}</div></td></tr>`).join(''):'<tr><td colspan="2" class="empty">No students yet. Add them in Students.</td></tr>';$('attendanceFoot').textContent=`${list.length} student${list.length===1?'':'s'} · P Present · A Absent · L Leave`;renderDashboard()}
 $('attendanceRows').addEventListener('click',e=>{const b=e.target.closest('button[data-id]');if(!b)return;const id=b.dataset.id,date=$('attDate').value,v=b.dataset.v;setStatus(id,date,record(id,date)===v?'':v)});
 $('attDate').addEventListener('change',()=>{renderAttendance();renderDashboard()});$('attClass').addEventListener('change',renderAttendance);$('attSearch').addEventListener('input',renderAttendance);
@@ -241,7 +264,30 @@ $('studentForm').addEventListener('submit',e=>{e.preventDefault();const name=$('
 $('cancelEdit').addEventListener('click',resetForm);
 function renderStudents(){const q=$('studentSearch').value.toLowerCase().trim(),f=$('studentClassFilter').value;const list=activeStudents().filter(s=>(f==='all'||cls(s.className)===f)&&(`${s.name} ${s.roll||''} ${s.phone||''}`.toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));$('directoryCount').textContent=`${activeStudents().length} active students`;$('studentList').innerHTML=list.length?list.map(s=>`<div class="studentrow"><div class="studentleft"><div class="avatar">${esc(initials(s.name))}</div><div style="min-width:0"><strong>${esc(s.name)}</strong><small>${esc(s.className||'No class')} · ${s.roll?'Roll '+esc(s.roll):'No roll number'}</small></div></div><div class="actions"><button class="btn" data-edit="${s.id}">Edit</button><button class="btn danger" data-archive="${s.id}">Remove</button></div></div>`).join(''):'<div class="empty">No students yet. Add your first student using the form.</div>'}
 $('studentSearch').addEventListener('input',renderStudents);$('studentClassFilter').addEventListener('change',renderStudents);
-$('studentList').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]')?.dataset.edit,del=e.target.closest('[data-archive]')?.dataset.archive;if(edit){const s=data.students.find(x=>x.id===edit);if(!s)return;editingId=s.id;$('sName').value=s.name;$('sClass').value=s.className||'';$('sRoll').value=s.roll||'';$('sPhone').value=s.phone||'';$('sJoin').value=s.joined||'';$('studentFormTitle').textContent='Edit student';$('saveStudent').textContent='Update student';$('cancelEdit').hidden=false;window.scrollTo({top:0,behavior:'smooth'})}if(del){const s=data.students.find(x=>x.id===del);confirmAction('Remove student',`Remove ${s?.name||'this student'} from the active directory? Their past attendance records will be kept in your data backup but will no longer appear in reports.`,()=>{data.students=data.students.map(x=>x.id===del?{...x,archived:true}:x);save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();toast('Student removed from active list.')})}});
+$('studentList').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]')?.dataset.edit,del=e.target.closest('[data-archive]')?.dataset.archive;if(edit){const s=data.students.find(x=>x.id===edit);if(!s)return;editingId=s.id;$('sName').value=s.name;$('sClass').value=s.className||'';$('sRoll').value=s.roll||'';$('sPhone').value=s.phone||'';$('sJoin').value=s.joined||'';$('studentFormTitle').textContent='Edit student';$('saveStudent').textContent='Update student';$('cancelEdit').hidden=false;window.scrollTo({top:0,behavior:'smooth'})}if(del){const s=data.students.find(x=>x.id===del);confirmAction('Remove student',`Remove ${s?.name||'this student'} from the active directory? Their past attendance records will be kept in your data backup but will no longer appear in reports.`,()=>{data.students=data.students.map(x=>x.id===del?{...x,archived:true}:x);save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();renderDaywise();toast('Student removed from active list.')})}});
+function daywiseEntries(){
+ const month=$('daywiseMonth').value,filter=$('daywiseClass').value,q=$('daywiseSearch').value.toLowerCase().trim();
+ const byId=new Map(data.students.map(s=>[s.id,s]));const entries=[];
+ Object.keys(data.attendance).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
+  if(month&&!date.startsWith(month))return;
+  Object.entries(data.attendance[date]||{}).forEach(([id,status])=>{
+   if(!statuses.includes(status))return;const student=byId.get(id);if(!student)return;
+   const className=cls(student.className);
+   if(filter==='__unassigned'&&className)return;if(filter!=='all'&&filter!=='__unassigned'&&className!==filter)return;
+   if(q&&!`${student.name} ${student.roll||''}`.toLowerCase().includes(q))return;
+   entries.push({date,id,status,student});
+  });
+ });return entries;
+}
+function renderDaywise(){
+ const entries=daywiseEntries(),groups=new Map();entries.forEach(x=>{if(!groups.has(x.date))groups.set(x.date,[]);groups.get(x.date).push(x)});
+ const total=entries.length,p=entries.filter(x=>x.status==='P').length,a=entries.filter(x=>x.status==='A').length,l=entries.filter(x=>x.status==='L').length;
+ $('daywiseSummary').textContent=`${groups.size} day${groups.size===1?'':'s'} · ${total} records · ${p} present · ${a} absent · ${l} leave`;
+ $('daywiseRecords').innerHTML=groups.size?[...groups.entries()].map(([date,rows])=>{const counts={P:0,A:0,L:0};rows.forEach(x=>counts[x.status]++);rows.sort((x,y)=>x.student.name.localeCompare(y.student.name));return `<div class="daygroup"><div class="daygrouphead"><strong>${esc(fmtDate(date))} · ${new Date(date+'T00:00:00').toLocaleDateString(undefined,{weekday:'long'})}</strong><div class="daycounts"><span class="daycount p">P ${counts.P}</span><span class="daycount a">A ${counts.A}</span><span class="daycount l">L ${counts.L}</span></div></div>${rows.map(x=>`<div class="dayrecord"><div><strong>${esc(x.student.name)}</strong><small>${esc(x.student.className||'No class')}${x.student.roll?' · Roll '+esc(x.student.roll):''}</small></div><span class="daystatus ${x.status}">${x.status==='P'?'Present':x.status==='A'?'Absent':'Leave'}</span></div>`).join('')}</div>`}).join(''):'<div class="empty">No attendance records match these filters.</div>';
+}
+$('daywiseMonth').addEventListener('change',renderDaywise);$('daywiseClass').addEventListener('change',renderDaywise);$('daywiseSearch').addEventListener('input',renderDaywise);
+$('daywiseAllDates').addEventListener('click',()=>{$('daywiseMonth').value='';renderDaywise()});
+$('exportDaywise').addEventListener('click',()=>{const rows=daywiseEntries();if(!rows.length)return toast('No records to export.');const csv=[['Date','Student','Class / group','Roll number','Status'],...rows.map(x=>[x.date,x.student.name,x.student.className||'',x.student.roll||'',x.status==='P'?'Present':x.status==='A'?'Absent':'Leave'])].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`anant-day-wise-attendance-${today()}.csv`;a.click();URL.revokeObjectURL(a.href);toast('Day-wise CSV exported.')});
 function refreshReportSelect(){const sel=$('reportStudent'),old=sel.value;sel.innerHTML='<option value="">Choose a student</option>'+activeStudents().slice().sort((a,b)=>a.name.localeCompare(b.name)).map(s=>`<option value="${s.id}">${esc(s.name)}${s.className?' · '+esc(s.className):''}</option>`).join('');if([...sel.options].some(o=>o.value===old))sel.value=old}
 function monthRecords(id,month){const days=Object.keys(data.attendance).filter(d=>d.startsWith(month)).sort();let p=0,a=0,l=0,marked=0;const detail=[];days.forEach(d=>{const v=data.attendance[d]?.[id];if(v){marked++;if(v==='P')p++;if(v==='A')a++;if(v==='L')l++;detail.push({date:d,status:v})}});const counted=p+a,pct=counted?Math.round(p/counted*100):0;return{p,a,l,marked,counted,pct,detail}}
 $('generateCard').addEventListener('click',generateCard);
@@ -250,13 +296,13 @@ $('printCard').addEventListener('click',()=>{if(!$('reportOutput').querySelector
 function exportData(){const blob=new Blob([JSON.stringify({...data,exportedAt:new Date().toISOString(),app:'Anant Attendance'},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`anant-attendance-backup-${today()}.json`;a.click();URL.revokeObjectURL(a.href);toast('Backup downloaded.')}
 $('exportBtn').addEventListener('click',exportData);$('exportBtn2').addEventListener('click',exportData);
 function chooseImport(){$('importFile').click()}$('importBtn').addEventListener('click',chooseImport);$('importBtn2').addEventListener('click',chooseImport);
-$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!Array.isArray(obj.students)||!obj.attendance||typeof obj.attendance!=='object')throw Error('Invalid backup');confirmAction('Restore backup','This replaces the current student and attendance data with the selected backup.',()=>{data={students:obj.students,attendance:obj.attendance,settings:{...data.settings,...obj.settings}};save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();toast('Backup restored.')})}catch(err){toast('Could not read that backup file.')}e.target.value=''});
+$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!Array.isArray(obj.students)||!obj.attendance||typeof obj.attendance!=='object')throw Error('Invalid backup');confirmAction('Restore backup','This replaces the current student and attendance data with the selected backup.',()=>{data={students:obj.students,attendance:obj.attendance,settings:{...data.settings,...obj.settings}};save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();renderDaywise();toast('Backup restored.')})}catch(err){toast('Could not read that backup file.')}e.target.value=''});
 function confirmAction(title,message,fn){$('confirmTitle').textContent=title;$('confirmText').textContent=message;pendingConfirm=fn;$('confirmModal').classList.add('open')}
 function closeConfirm(){$('confirmModal').classList.remove('open');pendingConfirm=null}
 $('confirmClose').addEventListener('click',closeConfirm);$('confirmCancel').addEventListener('click',closeConfirm);$('confirmYes').addEventListener('click',()=>{const fn=pendingConfirm;closeConfirm();fn?.()});
 $('instituteName').value=data.settings.institute||'Anant Education';$('threshold').value=data.settings.threshold||75;
 $('saveSettings').addEventListener('click',()=>{data.settings.institute=$('instituteName').value.trim()||'Anant Education';data.settings.threshold=Math.max(1,Math.min(100,Number($('threshold').value)||75));save();toast('Settings saved.')});
-$('clearData').addEventListener('click',()=>confirmAction('Delete all app data','This permanently deletes all students, attendance records and settings from this browser. Download a backup first if you may need this data.',()=>{localStorage.removeItem(KEY);data={students:[],attendance:{},settings:{institute:'Anant Education',threshold:75}};refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();toast('All app data deleted.')}));
+$('clearData').addEventListener('click',()=>confirmAction('Delete all app data','This permanently deletes all students, attendance records and settings from this browser. Download a backup first if you may need this data.',()=>{localStorage.removeItem(KEY);data={students:[],attendance:{},settings:{institute:'Anant Education',threshold:75}};refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();renderDaywise();toast('All app data deleted.')}));
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.add('show')});
 $('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return toast('Use your browser menu and choose Install app / Add to Home screen.');deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.remove('show')});
 if('serviceWorker'in navigator && location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
@@ -264,7 +310,7 @@ const THEME_KEY='anantAttendance.theme';
 function applyTheme(c){const r=document.documentElement;if(c==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',c);document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('on',b.dataset.themeChoice===c));try{localStorage.setItem(THEME_KEY,c)}catch(e){}}
 document.querySelectorAll('[data-theme-choice]').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.themeChoice)));
 applyTheme(localStorage.getItem(THEME_KEY)||'system');
-refreshClassOptions();renderAttendance();renderStudents();refreshReportSelect();renderDashboard();
+refreshClassOptions();renderAttendance();renderStudents();refreshReportSelect();renderDashboard();renderDaywise();
 })();
 </script>
 </body></html>

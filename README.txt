@@ -24,6 +24,13 @@ ATTENDANCE CALCULATION
 The app calculates attendance as Present / (Present + Absent) × 100.
 Leave is excluded from the percentage.
 
-Update: Student records now include an optional Section field. Section is shown in attendance, student directory and monthly cards, with filters for attendance and the directory. Existing student data remains compatible; older records simply have no section until edited.
-
 App icons are included in icons/icon-192.png and icons/icon-512.png and are configured for installable app shortcuts.
+
+DAY-WISE RECORDS
+- Open the Day-wise tab to view saved attendance grouped by date.
+- Filter by month, class/group, or student name/roll number.
+- Use All dates to view the full attendance history.
+- Export the filtered records to CSV.
+
+NOTE
+The uploaded HTML used as the base contains a Class / group field. It does not currently contain a separate Section field.
