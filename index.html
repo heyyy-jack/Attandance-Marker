@@ -3,410 +3,1104 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f3f5fb">
-<meta name="description" content="Private, offline-first coaching attendance manager">
+<meta name="theme-color" content="#4f46e5">
+<meta name="description" content="Coaching Manager: private, offline-first attendance, marks and report cards for coaching institutes.">
+<meta name="author" content="Jack">
 <link rel="manifest" href="manifest.webmanifest">
-<title>Manager</title>
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Coaching Manager</title>
+<script>try{var __t=localStorage.getItem('coachingManager.theme')||localStorage.getItem('anantAttendance.theme');if(__t==='light'||__t==='dark')document.documentElement.setAttribute('data-theme',__t)}catch(e){}</script>
 <style>
-:root{--bg:#f2f2f7;--card:rgba(255,255,255,.62);--card-solid:#ffffff;--edge:rgba(255,255,255,.85);--sep:rgba(60,60,67,.16);--label:#000000;--label2:rgba(60,60,67,.62);--fill:rgba(120,120,128,.12);--input:rgba(255,255,255,.8);--tabon:rgba(255,255,255,.85);--blue:#007aff;--green:#248a3d;--red:#d70015;--orange:#b25000;--shadow:0 10px 30px rgba(20,30,70,.08);--hi:inset 0 1px 0 rgba(255,255,255,.9);--orb:.55;--sheet:rgba(248,248,252,.88);color-scheme:light;}
-:root[data-theme="dark"]{--bg:#000000;--card:rgba(255,255,255,.08);--card-solid:#1c1c1e;--edge:rgba(255,255,255,.14);--sep:rgba(84,84,88,.65);--label:#ffffff;--label2:rgba(235,235,245,.6);--fill:rgba(120,120,128,.32);--input:rgba(255,255,255,.08);--tabon:rgba(255,255,255,.18);--blue:#0a84ff;--green:#30d158;--red:#ff453a;--orange:#ff9f0a;--shadow:0 12px 40px rgba(0,0,0,.45);--hi:inset 0 1px 0 rgba(255,255,255,.12);--orb:.22;--sheet:rgba(30,30,34,.82);color-scheme:dark;}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000000;--card:rgba(255,255,255,.08);--card-solid:#1c1c1e;--edge:rgba(255,255,255,.14);--sep:rgba(84,84,88,.65);--label:#ffffff;--label2:rgba(235,235,245,.6);--fill:rgba(120,120,128,.32);--input:rgba(255,255,255,.08);--tabon:rgba(255,255,255,.18);--blue:#0a84ff;--green:#30d158;--red:#ff453a;--orange:#ff9f0a;--shadow:0 12px 40px rgba(0,0,0,.45);--hi:inset 0 1px 0 rgba(255,255,255,.12);--orb:.22;--sheet:rgba(30,30,34,.82);color-scheme:dark;}}
+/* ---------- Design tokens ---------- */
+:root{
+ --bg:#eef2fb;
+ --surface:rgba(255,255,255,.72);
+ --surface-solid:#ffffff;
+ --line:rgba(15,23,42,.07);
+ --line-2:rgba(15,23,42,.14);
+ --text:#0f172a;
+ --text-2:#5b6478;
+ --text-3:#8a92a6;
+ --fill:#f3f5fb;
+ --fill-2:#e8ecf6;
+ --input:#ffffff;
+ --brand:#2563eb;
+ --brand-soft:#e6edff;
+ --ok:#15803d;--ok-soft:#dcfce9;
+ --bad:#dc2626;--bad-soft:#fde2e2;
+ --warn:#b45309;--warn-soft:#fdf0d5;
+ --shadow:0 1px 2px rgba(15,23,42,.04),0 12px 32px -14px rgba(15,23,42,.16);
+ --hi:inset 0 1px 0 rgba(255,255,255,.85);
+ --sheet:rgba(255,255,255,.94);
+ --avt-s:62%;--avt-l:38%;
+ --orb:1;
+ color-scheme:light;
+}
+:root[data-theme="dark"]{
+ --bg:#0a0f1e;
+ --surface:rgba(255,255,255,.055);
+ --surface-solid:#151b2e;
+ --line:rgba(255,255,255,.08);
+ --line-2:rgba(255,255,255,.15);
+ --text:#eef2ff;
+ --text-2:#a4adc4;
+ --text-3:#6f7892;
+ --fill:rgba(255,255,255,.05);
+ --fill-2:rgba(255,255,255,.09);
+ --input:rgba(255,255,255,.06);
+ --brand:#6b9bff;
+ --brand-soft:rgba(107,155,255,.16);
+ --ok:#4ade80;--ok-soft:rgba(74,222,128,.14);
+ --bad:#fb7185;--bad-soft:rgba(251,113,133,.15);
+ --warn:#fbbf24;--warn-soft:rgba(251,191,36,.14);
+ --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+ --hi:inset 0 1px 0 rgba(255,255,255,.07);
+ --sheet:rgba(21,27,46,.95);
+ --avt-s:80%;--avt-l:74%;
+ --orb:.7;
+ color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]){
+ --bg:#0a0f1e;
+ --surface:rgba(255,255,255,.055);
+ --surface-solid:#151b2e;
+ --line:rgba(255,255,255,.08);
+ --line-2:rgba(255,255,255,.15);
+ --text:#eef2ff;
+ --text-2:#a4adc4;
+ --text-3:#6f7892;
+ --fill:rgba(255,255,255,.05);
+ --fill-2:rgba(255,255,255,.09);
+ --input:rgba(255,255,255,.06);
+ --brand:#6b9bff;
+ --brand-soft:rgba(107,155,255,.16);
+ --ok:#4ade80;--ok-soft:rgba(74,222,128,.14);
+ --bad:#fb7185;--bad-soft:rgba(251,113,133,.15);
+ --warn:#fbbf24;--warn-soft:rgba(251,191,36,.14);
+ --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+ --hi:inset 0 1px 0 rgba(255,255,255,.07);
+ --sheet:rgba(21,27,46,.95);
+ --avt-s:80%;--avt-l:74%;
+ --orb:.7;
+ color-scheme:dark;
+ }
+}
 
+/* ---------- Base ---------- */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;min-height:100vh;background:var(--bg);color:var(--label);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.35;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:var(--orb);background:radial-gradient(circle at 12% 10%,#5ac8fa 0,transparent 38%),radial-gradient(circle at 88% 40%,#af52de 0,transparent 36%)}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:var(--orb);background:radial-gradient(900px 520px at -5% -12%,rgba(37,99,235,.20),transparent 60%),radial-gradient(760px 480px at 105% 4%,rgba(124,58,237,.16),transparent 60%)}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
-.app{position:relative;max-width:760px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 96px}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.app{position:relative;max-width:780px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 112px)}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.sub{margin:3px 0 0;font-size:13px;color:var(--text-2)}
+.muted{color:var(--text-2)}
 
-/* Header */
-.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
-[hidden]{display:none!important}
-.brand{display:flex;gap:12px;align-items:center}
-.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(180deg,#4aa8ff,#0a7aff);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 16px rgba(10,122,255,.35);display:grid;place-items:center;color:#fff;font-size:20px}
-.brand h1{font-size:24px;margin:0;font-weight:700;letter-spacing:-.4px}
-.brand small{color:var(--label2);font-size:13px}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
+/* ---------- Top bar ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:46px;height:46px;border-radius:14px;flex-shrink:0;box-shadow:0 10px 22px -8px rgba(37,99,235,.55)}
+.brand h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.1}
+.brand p{margin:3px 0 0;font-size:13px;color:var(--text-2)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.actions.end{justify-content:flex-end}
 
-/* Buttons */
-.btn{border:1px solid var(--edge);background:var(--card);color:var(--blue);padding:10px 15px;border-radius:14px;font-weight:600;font-size:15px;box-shadow:var(--hi),0 3px 10px rgba(0,0,0,.05);transition:transform .12s ease}
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 16px;border-radius:14px;border:1px solid var(--line-2);background:var(--surface-solid);color:var(--text);font-weight:650;font-size:15px;box-shadow:var(--shadow);transition:transform .12s ease,opacity .15s}
+.btn .ic{width:18px;height:18px}
 .btn:active{transform:scale(.97)}
-.btn.primary{background:linear-gradient(180deg,#48a6ff,#0a7aff);border-color:transparent;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 18px rgba(10,122,255,.3)}
-.btn.danger{color:var(--red)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.install{display:none}.install.show{display:inline-flex}
+.btn.primary{background:linear-gradient(180deg,#4f8dff,#2563eb);border-color:transparent;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 20px -10px rgba(37,99,235,.7)}
+.btn.ghost{background:var(--fill);border-color:transparent;box-shadow:none;color:var(--brand)}
+.btn.danger{color:var(--bad)}
+.btn.sm{min-height:36px;padding:0 12px;font-size:14px;border-radius:12px}
+.btn.block{width:100%}
+.btn .lbl{white-space:nowrap}
+.install{border-color:transparent;background:var(--brand-soft);color:var(--brand)}
 
-/* Glass cards */
-.glass,.card{background:var(--card);border:1px solid var(--edge);border-radius:24px;box-shadow:var(--shadow),var(--hi);padding:14px;margin-bottom:12px}
-.card h2{font-size:20px;font-weight:700;margin:0 0 6px}
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;color:#fff;border-radius:26px;padding:20px 20px 18px;margin-bottom:14px;background:linear-gradient(135deg,#3b82f6 0%,#4f46e5 55%,#7c3aed 100%);box-shadow:0 26px 50px -24px rgba(79,70,229,.75),inset 0 1px 0 rgba(255,255,255,.35)}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12);pointer-events:none}
+.hero::before{width:230px;height:230px;right:-80px;top:-100px}
+.hero::after{width:150px;height:150px;right:70px;bottom:-100px;background:rgba(255,255,255,.08)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;opacity:.85;position:relative}
+.hero h2{margin:6px 0 0;font-size:24px;letter-spacing:-.5px;position:relative}
+.herobar{margin-top:14px;font-size:13px;font-weight:600;opacity:.95;position:relative}
+.bar{height:7px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden;margin-top:8px;position:relative}
+.bar i{display:block;height:100%;width:0;border-radius:inherit;background:#fff;transition:width .45s ease}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px;position:relative}
+.stat{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);border-radius:16px;padding:10px 11px 9px;min-width:0}
+.stat small{display:block;font-size:11px;font-weight:600;opacity:.92;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat b{display:block;font-size:22px;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
 
-/* Hero */
-.hero{position:relative;overflow:hidden;color:#fff;padding:14px 16px;border-radius:24px;margin-bottom:12px;background:linear-gradient(135deg,#4aa8ff 0%,#0a7aff 45%,#6a5cff 100%);box-shadow:0 18px 44px rgba(10,122,255,.35),inset 0 1px 0 rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.35)}
-.eyebrow{font-size:12px;opacity:.85;letter-spacing:1px;text-transform:uppercase;font-weight:600}
-.hero h2{font-size:22px;letter-spacing:-.4px;margin:4px 0 0}
-.hero p{margin:0;opacity:.85}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
-.stat{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:14px;padding:8px 9px}
-.stat label{display:block;font-size:10px;opacity:.9;line-height:1.2}
-.stat strong{display:block;font-size:19px;margin-top:2px;font-variant-numeric:tabular-nums}
+/* ---------- Nudge banner ---------- */
+.nudge{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:18px;background:var(--warn-soft);border:1px solid rgba(180,83,9,.22);margin-bottom:14px}
+.nudge .ic{color:var(--warn)}
+.nudge p{margin:0;flex:1;min-width:180px;font-size:14px}
 
-/* Floating glass tab bar */
-.tabbar{overflow-x:auto;scrollbar-width:none}.tabbar::-webkit-scrollbar{display:none}.tab{min-width:58px;white-space:nowrap}.tabbar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);max-width:736px;margin:0 auto;display:flex;justify-content:space-around;gap:2px;padding:6px;border-radius:30px;background:var(--card);border:1px solid var(--edge);box-shadow:0 12px 34px rgba(0,0,0,.14),var(--hi);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);z-index:10}
-.tab{flex:1;border:0;background:transparent;color:var(--label2);padding:7px 4px;border-radius:22px;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px}
-.tab .gl{font-size:18px;line-height:1}
-.tab.active{color:var(--blue);background:var(--tabon);box-shadow:var(--hi)}
+/* ---------- Tab bar ---------- */
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 12px);width:min(calc(100% - 24px),748px);display:flex;gap:2px;padding:6px;border-radius:24px;background:var(--sheet);border:1px solid var(--line-2);box-shadow:0 16px 40px -14px rgba(15,23,42,.35),var(--hi);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);overflow-x:auto;scrollbar-width:none;z-index:10}
+.tabbar::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;min-width:56px;border:0;background:transparent;color:var(--text-2);padding:8px 6px 7px;border-radius:18px;font-size:11px;font-weight:650;display:flex;flex-direction:column;align-items:center;gap:3px;white-space:nowrap}
+.tab .ic{width:21px;height:21px}
+.tab.active{color:var(--brand);background:var(--brand-soft)}
+@media(max-width:440px){.tab:not(.active) span{display:none}.tab{min-width:44px;padding:9px 4px}}
 
-/* Panels & sections */
-.panel{display:none}.panel.active{display:block}
-.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
-.sectionhead h2{font-size:20px;margin:0;font-weight:700}
-.sub{font-size:13px;color:var(--label2)}
-.muted{color:var(--label2)}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
-.toolbar .field{min-width:130px}
-.field{display:grid;gap:5px;min-width:0}
-.field label{font-size:13px;color:var(--label2);font-weight:600}
-input,select{padding:11px 12px;border:1px solid var(--edge);border-radius:12px;background:var(--input);color:var(--label);outline:none;min-width:0}
-input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,122,255,.2)}
-.hint{display:none;background:var(--fill);color:var(--label2);border-radius:14px;padding:11px 13px;font-size:13px;margin:12px 0;line-height:1.4}
+/* ---------- Panels & cards ---------- */
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow),var(--hi);padding:18px;margin-bottom:14px;-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);min-width:0}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.chl{display:flex;align-items:center;gap:12px;min-width:0}
+.ico{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand);flex-shrink:0}
+.ico .ic{width:21px;height:21px}
+.ch h2{margin:0;font-size:18px;font-weight:750;letter-spacing:-.3px}
+.card > h2{margin:0 0 12px;font-size:18px;font-weight:750;letter-spacing:-.3px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.stack{display:grid;gap:14px}
+.empty{text-align:center;padding:28px 16px;color:var(--text-2);border:1px dashed var(--line-2);border-radius:18px;font-size:14px}
+.note{font-size:13px;color:var(--text-2);background:var(--fill);border-radius:14px;padding:11px 13px;margin:12px 0 0;line-height:1.45}
 
-/* Tables */
-.tablewrap{overflow:auto;border-radius:16px;border:1px solid var(--sep);background:var(--input)}
-table{border-collapse:collapse;width:100%;min-width:0}
-th,td{text-align:left;padding:9px 10px;border-bottom:.5px solid var(--sep);font-size:14px}
-th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--label2);font-weight:600}
-tr:last-child td{border-bottom:0}
-.studentname{font-weight:600}
-.studentmeta{font-size:12px;color:var(--label2);margin-top:2px}
-.statusgroup{display:flex;gap:4px}
-.status{border:1px solid var(--edge);background:var(--fill);border-radius:9px;padding:6px 0;font-size:13px;font-weight:700;color:var(--label2);width:36px}
-.status[data-v="P"].on{background:rgba(52,199,89,.2);color:var(--green);border-color:rgba(52,199,89,.45)}
-.status[data-v="A"].on{background:rgba(255,59,48,.18);color:var(--red);border-color:rgba(255,59,48,.45)}
-.status[data-v="L"].on{background:rgba(255,149,0,.2);color:var(--orange);border-color:rgba(255,149,0,.45)}
-.empty{text-align:center;padding:26px;color:var(--label2)}
-
-/* Forms & lists */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+/* ---------- Forms ---------- */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+.toolbar .field{min-width:140px;flex:1 1 140px}
+.toolbar .field.grow{flex:1 1 200px}
+.toolbar .btn{align-self:flex-end}
+.field{display:grid;gap:6px;min-width:0}
+.field > label{font-size:12px;font-weight:650;color:var(--text-2);text-transform:uppercase;letter-spacing:.4px}
+input,select{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line-2);border-radius:13px;background:var(--input);color:var(--text);outline:none;min-width:0;font-size:15px}
+input::placeholder{color:var(--text-3)}
+input:focus,select:focus{border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-soft)}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .formgrid .full{grid-column:1/-1}
-.list{display:grid;gap:9px}
-.studentrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-radius:16px;background:var(--fill)}
-.studentrow strong{display:block}
-.studentrow small{color:var(--label2)}
-.studentleft{display:flex;align-items:center;gap:12px;min-width:0}
-.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(145deg,#a6c8ff,#c9b5ff);display:grid;place-items:center;color:#1d3b8a;font-weight:700;flex-shrink:0}
-.pill{font-size:12px;padding:5px 9px;border-radius:20px;background:var(--fill);color:var(--label2)}
-.progress{height:6px;background:var(--fill);border-radius:6px;overflow:hidden;margin-top:8px}
-.progress i{display:block;height:100%;background:linear-gradient(90deg,#4aa8ff,#0a7aff);border-radius:6px}
 
-/* Report */
-.reportgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}
-.reportstat{padding:13px;background:var(--fill);border-radius:14px}
-.reportstat small{display:block;color:var(--label2)}
-.reportstat b{font-size:21px}
-.daygroup{padding:14px;border-radius:18px;background:var(--fill);margin:0 0 12px}
-.daygrouphead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.daygrouphead strong{font-size:16px}.daycounts{display:flex;gap:6px;flex-wrap:wrap}
-.daycount{font-size:11px;font-weight:700;padding:4px 8px;border-radius:20px;background:var(--card)}
-.daycount.p{color:var(--green)}.daycount.a{color:var(--red)}.daycount.l{color:var(--orange)}
-.dayrecord{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid var(--sep)}
-.dayrecord:first-child{border-top:0}.dayrecord small{display:block;color:var(--label2);font-size:12px;margin-top:2px}
-.daystatus{font-size:12px;font-weight:700;padding:5px 9px;border-radius:20px;white-space:nowrap}
-.daystatus.P{background:rgba(52,199,89,.16);color:var(--green)}.daystatus.A{background:rgba(255,59,48,.14);color:var(--red)}.daystatus.L{background:rgba(255,149,0,.16);color:var(--orange)}
-.foot{text-align:center;color:var(--label2);font-size:12px;margin-top:24px}
+/* ---------- Mini stats ---------- */
+.minis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 14px}
+.mini{background:var(--fill);border-radius:16px;padding:11px 12px;min-width:0}
+.mini small{display:block;font-size:12px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini b{display:block;font-size:19px;margin-top:2px;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* Segmented control (theme) */
-.seg{display:flex;background:var(--fill);border-radius:11px;padding:3px;gap:2px;margin-top:10px}
-.seg button{flex:1;border:0;background:transparent;padding:8px;border-radius:9px;font-weight:600;font-size:14px;color:var(--label)}
-.seg button.on{background:var(--tabon);box-shadow:var(--hi),0 2px 6px rgba(0,0,0,.1)}
+/* ---------- People rows ---------- */
+.avatar{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;flex-shrink:0;font-weight:750;font-size:14px;background:hsl(var(--h) 80% 50% / .16);color:hsl(var(--h) var(--avt-s) var(--avt-l))}
+.who{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.txt{min-width:0}
+.name{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{font-size:12.5px;color:var(--text-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rows,.list{display:grid;gap:8px}
+.srow,.stu,.drow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px 11px 13px;border-radius:18px;background:var(--fill);min-width:0}
+.drow{background:var(--surface-solid);border-radius:14px;padding:9px 12px;margin-top:6px}
+.seg3{display:flex;gap:6px;flex-shrink:0}
+.st{width:46px;height:44px;border-radius:13px;border:1px solid var(--line-2);background:var(--surface-solid);color:var(--text-2);font-weight:800;font-size:15px;transition:transform .1s,background .15s}
+.st:active{transform:scale(.94)}
+.st.P.on{background:var(--ok-soft);color:var(--ok);border-color:transparent;box-shadow:inset 0 0 0 1.5px var(--ok)}
+.st.A.on{background:var(--bad-soft);color:var(--bad);border-color:transparent;box-shadow:inset 0 0 0 1.5px var(--bad)}
+.st.L.on{background:var(--warn-soft);color:var(--warn);border-color:transparent;box-shadow:inset 0 0 0 1.5px var(--warn)}
+@media(max-width:460px){.srow{flex-wrap:wrap}.srow .seg3{width:100%}.srow .seg3 .st{flex:1;width:auto}}
+.tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:750;white-space:nowrap}
+.tag.P{background:var(--ok-soft);color:var(--ok)}
+.tag.A{background:var(--bad-soft);color:var(--bad)}
+.tag.L{background:var(--warn-soft);color:var(--warn)}
+.pill{font-size:12px;font-weight:700;padding:5px 10px;border-radius:99px;background:var(--fill-2);color:var(--text-2);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.stu-end{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface-solid);color:var(--text-2);display:grid;place-items:center;flex-shrink:0}
+.icon-btn.danger{color:var(--bad)}
+.icon-btn .ic{width:18px;height:18px}
+@media(max-width:560px){.stu{flex-wrap:wrap}.stu-end{width:100%;justify-content:space-between}}
 
-/* Sheet-style dialog */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-end;justify-content:center;z-index:20}
+/* ---------- Day-wise ---------- */
+.dgroup{background:var(--fill);border-radius:20px;padding:14px;margin-bottom:10px}
+.dhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.dhead strong{font-size:15px}
+.counts{display:flex;gap:6px;flex-wrap:wrap}
+.stlabel{font-size:12px;font-weight:750;padding:5px 10px;border-radius:99px;white-space:nowrap}
+.stlabel.P{background:var(--ok-soft);color:var(--ok)}
+.stlabel.A{background:var(--bad-soft);color:var(--bad)}
+.stlabel.L{background:var(--warn-soft);color:var(--warn)}
+
+/* ---------- Marks ---------- */
+.mhead{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--fill);margin-bottom:14px}
+.mgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mfield{display:grid;gap:8px;padding:12px 13px;border-radius:16px;background:var(--fill)}
+.mfield > span{font-size:13px;font-weight:650;color:var(--text-2)}
+.minput{display:flex;align-items:center;gap:8px}
+.minput input{min-height:46px;font-size:20px;font-weight:750;font-variant-numeric:tabular-nums;background:var(--surface-solid)}
+.minput small{color:var(--text-3);font-weight:650;white-space:nowrap;font-size:13px}
+.mpreview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.mpreview .mini b{font-size:20px}
+.mpreview-note{grid-column:1/-1;font-size:13px;color:var(--text-2);text-align:center;padding:4px}
+.mrow-end{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* ---------- Segmented control ---------- */
+.seg{display:flex;background:var(--fill);border-radius:15px;padding:4px;gap:4px;max-width:440px}
+.seg button{flex:1;min-height:40px;border:0;background:transparent;border-radius:11px;font-weight:650;font-size:14px;color:var(--text-2)}
+.seg button.on{background:var(--surface-solid);color:var(--text);box-shadow:0 2px 8px rgba(15,23,42,.12)}
+
+/* ---------- About ---------- */
+.about{text-align:center;padding:26px 18px 24px;background:linear-gradient(160deg,var(--brand-soft),transparent 70%),var(--surface)}
+.about img{width:68px;height:68px;border-radius:20px;box-shadow:0 14px 28px -10px rgba(37,99,235,.6)}
+.about h3{margin:14px 0 2px;font-size:19px;letter-spacing:-.3px}
+.about .sub{margin:0}
+.madeby{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:9px 16px;border-radius:99px;background:var(--surface-solid);border:1px solid var(--line-2);font-weight:700;font-size:15px;box-shadow:var(--shadow)}
+.madeby b{background:linear-gradient(90deg,#3b82f6,#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- Report paper (always light, prints cleanly) ---------- */
+.paper{--pt:#14203a;--pm:#66728f;--pl:#e4e9f4;color:var(--pt);background:#fff;border:1px solid var(--pl);border-radius:22px;padding:26px 26px 22px;max-width:720px;margin:0 auto;box-shadow:0 22px 44px -26px rgba(15,23,42,.28);font-size:15px}
+.paper h3{margin:6px 0 2px;font-size:24px;letter-spacing:-.4px;color:var(--pt)}
+.paper h4{margin:18px 0 8px;font-size:14px;color:var(--pt)}
+.p-head{text-align:center;padding-bottom:16px;border-bottom:2px solid var(--pl)}
+.p-inst{font-size:11px;font-weight:750;letter-spacing:1.8px;text-transform:uppercase;color:var(--pm)}
+.p-month{color:var(--pm);font-size:14px}
+.p-student{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:18px 0 14px}
+.p-name{font-size:20px;font-weight:750}
+.p-meta{color:var(--pm);font-size:13px;margin-top:2px}
+.p-right{text-align:right}
+.p-right small{display:block;color:var(--pm);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+.p-right b{font-size:14px}
+.p-table{width:100%;border-collapse:collapse;font-size:14px}
+.p-table th,.p-table td{padding:9px 8px;border-bottom:1px solid var(--pl);text-align:left;color:var(--pt)}
+.p-table th{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--pm);font-weight:700}
+.p-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.p-table .bar-col{width:38%}
+.p-table th{white-space:nowrap}
+.p-table tfoot th{color:var(--pt);font-size:14px;text-transform:none;letter-spacing:0;border-bottom:0;background:#f4f7fd;font-weight:750}
+.p-table.compact th,.p-table.compact td{padding:7px 8px}
+.p-table .tag.P{background:#dcfce9;color:#15803d}
+.p-table .tag.A{background:#fde2e2;color:#b91c1c}
+.p-table .tag.L{background:#fdf0d5;color:#92400e}
+.pbar{display:block;height:8px;border-radius:99px;background:#eef2fa;overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#60a5fa,#2563eb)}
+.p-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0 4px}
+.p-tiles > div{background:#f4f7fd;border-radius:14px;padding:12px 14px;min-width:0}
+.p-tiles small{display:block;color:var(--pm);font-size:12px}
+.p-tiles b{display:block;font-size:22px;margin-top:2px;letter-spacing:-.4px;font-variant-numeric:tabular-nums;color:var(--pt)}
+.p-att-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.p-att-pct{margin-left:auto;font-weight:750;font-size:14px;color:var(--pt)}
+.p-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-top:28px;padding-top:12px;border-top:1px solid var(--pl);color:var(--pm);font-size:12px}
+.sig{border-top:1px dashed #b7c1d6;padding-top:5px;min-width:140px;text-align:center}
+.att-hero{display:flex;align-items:center;gap:24px;flex-wrap:wrap;padding:6px 0 2px}
+.ring{position:relative;width:136px;height:136px;flex-shrink:0}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .track{fill:none;stroke:#eaeef7;stroke-width:12}
+.ring .val{fill:none;stroke:#2563eb;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.ring.ok .val{stroke:#16a34a}
+.ring.low .val{stroke:#dc2626}
+.ring-txt{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring-txt b{font-size:28px;letter-spacing:-.6px;font-variant-numeric:tabular-nums;color:var(--pt)}
+.ring-txt small{color:var(--pm);font-size:12px}
+.att-side{flex:1;min-width:200px}
+.att-status{display:inline-flex;padding:6px 12px;border-radius:99px;font-weight:700;font-size:13px;background:#eef2fa;color:var(--pm)}
+.att-status.ok{background:#dcfce9;color:#15803d}
+.att-status.low{background:#fde2e2;color:#b91c1c}
+.p-note{font-size:12px;color:var(--pm);margin:10px 0 0;line-height:1.45}
+.paper .empty{color:var(--pm);border-color:var(--pl)}
+
+/* ---------- Modal & toast ---------- */
+.modal{position:fixed;inset:0;background:rgba(8,12,24,.42);display:none;align-items:flex-end;justify-content:center;z-index:20}
 .modal.open{display:flex}
-.dialog{width:100%;max-width:520px;max-height:90vh;overflow:auto;background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(180%);backdrop-filter:blur(40px) saturate(180%);border:1px solid var(--edge);border-radius:30px 30px 0 0;padding:22px 20px calc(env(safe-area-inset-bottom,0px) + 22px);box-shadow:0 -10px 40px rgba(0,0,0,.2)}
-.dialoghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.dialoghead h2{margin:0;font-size:19px}
-.close{border:0;background:var(--fill);border-radius:50%;width:32px;height:32px;font-size:20px;color:var(--label2)}
+.dialog{width:100%;max-width:460px;background:var(--sheet);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--line-2);border-radius:26px 26px 0 0;padding:22px 20px calc(env(safe-area-inset-bottom,0px) + 20px);box-shadow:0 -10px 40px rgba(0,0,0,.22)}
+.dialog h2{margin:0 0 6px;font-size:19px}
+.dialog p{margin:0 0 18px;color:var(--text-2);font-size:15px}
+.dialog .actions{justify-content:flex-end}
+@media(min-width:600px){.modal{align-items:center}.dialog{border-radius:26px}}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translate(-50%,12px);background:#0f172a;color:#fff;padding:11px 16px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;font-size:14px;font-weight:550;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 
-.toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);left:50%;transform:translateX(-50%);background:rgba(30,30,34,.86);color:#fff;padding:11px 16px;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.25);display:none;z-index:30;font-size:14px;max-width:90vw;text-align:center}
-.toast.show{display:block}
+/* ---------- Responsive ---------- */
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+@media(max-width:520px){
+ .formgrid{grid-template-columns:1fr}
+ .formgrid .full{grid-column:auto}
+ .stats{gap:6px}
+ .stat{padding:9px 8px}
+ .stat b{font-size:19px}
+ .minis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .card{padding:16px;border-radius:20px}
+ .p-table th,.p-table td{padding:8px 5px}
+ .p-table .bar-col{width:26%}
+ .p-table th.num:last-child,.p-table td.num:last-child{padding-right:2px}
+ .p-tiles{grid-template-columns:1fr 1fr 1fr}
+ .p-tiles > div{padding:10px}
+ .p-tiles b{font-size:18px}
+ .paper{padding:20px 16px}
+ .brand h1{font-size:20px}
+}
+@media(max-width:380px){.btn .lbl{display:none}.btn{padding:0 12px}}
 
-@media(max-width:760px){.grid2{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}.reportgrid{grid-template-columns:repeat(3,1fr)}.hero h2{font-size:22px}.stats{grid-template-columns:repeat(4,1fr)}}
-@media(max-width:420px){.brand h1{font-size:23px}.brand small{font-size:11px}.logo{width:38px;height:38px}.stats .stat strong{font-size:19px}.reportstat{padding:10px}.reportstat b{font-size:18px}}
-.marksgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.markfield{display:grid;gap:5px;padding:11px;border-radius:14px;background:var(--fill)}.markfield label{font-size:13px;color:var(--label2);font-weight:600}.markfield input{width:100%}.gradechip{display:inline-block;padding:5px 10px;border-radius:20px;background:#e8efff;color:#2454b8;font-weight:700;font-size:12px}@media(max-width:420px){.marksgrid{grid-template-columns:1fr}}\n
-/* Refined report-card presentation */
-.report-card-premium{max-width:720px;margin:0 auto;background:linear-gradient(145deg,#fff 0%,#f6f8ff 100%);color:#17233e;border:1px solid #dce5fb;border-radius:26px;overflow:hidden;box-shadow:0 16px 42px rgba(35,67,130,.14)}
-.report-card-band{padding:22px 24px;background:linear-gradient(120deg,#102c62,#2466c8 58%,#745ce5);color:#fff}
-.report-card-band .school-kicker{font-size:11px;letter-spacing:1.7px;text-transform:uppercase;opacity:.82;font-weight:700}
-.report-card-band h2{margin:6px 0 2px;font-size:26px;letter-spacing:-.5px}
-.report-card-band .report-subtitle{font-size:13px;opacity:.85}
-.report-card-body{padding:22px 24px}
-.report-student-strip{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;border:1px solid #e5eaf5;border-radius:16px;background:#fff}
-.report-student-strip strong{font-size:18px}
-.report-metric{background:#f0f4ff;border:1px solid #e0e8ff;border-radius:16px;padding:13px}
-.report-metric small{display:block;color:#6d7b98;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.report-metric b{display:block;font-size:23px;color:#173d82;margin-top:3px}
-.report-card-premium .tablewrap{border-color:#e1e8f5;background:#fff}
-.report-card-premium th{background:#f3f6fd;color:#657493}
-.report-card-premium td,.report-card-premium th{padding:11px 13px}
-.report-card-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:13px;border-top:1px solid #e3e9f4;color:#75819a;font-size:11px}
-@media print{.report-card-premium{box-shadow:none;border:1px solid #dce5fb;break-inside:avoid}.report-card-band{-webkit-print-color-adjust:exact;print-color-adjust:exact}.report-card-premium .report-card-band{background:#244f9d!important;color:#fff!important}}
-
-@media print{body{background:#fff!important}body::before{display:none}.tabbar,.toast,.modal{display:none!important}.app>*:not(#reports),#reports .no-print{display:none!important}#reports{display:block!important}.reportprint{box-shadow:none!important;border:0!important;background:#fff!important;padding:0!important}.reportprint .tablewrap{overflow:visible}#reportTable{min-width:0}#reportTable th,#reportTable td{font-size:10px;padding:7px}.printtitle{display:block!important}}
+/* ---------- Print: only the active report card ---------- */
+@media print{
+ @page{margin:12mm}
+ body{background:#fff!important;color:#000}
+ body::before{display:none}
+ .app{padding:0;max-width:none}
+ .app > :not(.panel){display:none!important}
+ .panel:not(.active){display:none!important}
+ .card{background:#fff!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;backdrop-filter:none!important}
+ .no-print{display:none!important}
+ .paper{box-shadow:none!important;border:0!important;border-radius:0;padding:0;max-width:none}
+ .modal,.toast{display:none!important}
+}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+ <defs>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.8c1.6.8 2.6 2.7 3 5.2"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24"><path d="M6 3.5h8l4 4V20.5H6z"/><path d="M9.5 16v-3M12 16v-6M14.5 16v-4.5"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2.2"/><path d="M14.5 10h3M14.5 13.5h3M6.5 16c.5-1.2 1.4-1.8 2.5-1.8s2 .6 2.5 1.8"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 19.5h14"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3.5h10V9M6.5 17H4.5v-7h15v7h-2M7 14h10v6.5H7z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.5v.5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.4-7.5-10A4.2 4.2 0 0 1 12 7.6 4.2 4.2 0 0 1 19.5 10c0 5.6-7.5 10-7.5 10z"/></symbol>
+ </defs>
+</svg>
+
 <div class="app">
-<header class="top">
- <div class="brand"><div class="logo">✦</div><div><h1>Manager</h1><small>Private by design · Offline-ready</small></div></div>
- <div class="actions"><button class="btn install" id="installBtn">Install app</button><button class="btn" id="exportBtn">Backup</button><button class="btn" id="importBtn">Restore</button><input type="file" id="importFile" accept="application/json" hidden></div>
-</header>
-<section class="hero">
- <div class="eyebrow" id="todayLabel">DAILY ATTENDANCE</div><h2 id="heroDate">Attendance, made simple.</h2>
- <div class="stats">
-  <div class="stat"><label>Total students</label><strong id="totalStudents">0</strong></div>
-  <div class="stat"><label>Present today</label><strong id="presentToday">0</strong></div>
-  <div class="stat"><label>Absent today</label><strong id="absentToday">0</strong></div>
-  <div class="stat"><label>Not marked</label><strong id="unmarkedToday">0</strong></div>
- </div>
-</section>
-<nav class="tabbar">
- <button class="tab active" data-tab="attendance"><span class="gl">✓</span>Attendance</button>
- <button class="tab" data-tab="daywise"><span class="gl">▦</span>Day-wise</button>
- <button class="tab" data-tab="students"><span class="gl">👥</span>Students</button>
- <button class="tab" data-tab="marks"><span class="gl">✎</span>Marks</button>
- <button class="tab" data-tab="marksReport"><span class="gl">▤</span>Report</button>
- <button class="tab" data-tab="reports"><span class="gl">▧</span>Att. Cards</button>
- <button class="tab" data-tab="settings"><span class="gl">⚙</span>Settings</button>
-</nav>
-<section class="panel active" id="attendance">
- <div class="card glass">
-  <div class="sectionhead"><div><h2>Mark attendance</h2><div class="sub">One attendance record per student per day</div></div><button class="btn primary" id="markAll">Mark all present</button></div>
-  <div class="toolbar">
-   <div class="field"><label for="attDate">Date</label><input type="date" id="attDate"></div>
-   <div class="field" style="display:none"><label for="attClass">Class / group</label><select id="attClass"><option value="all">Everyone</option><option value="__unassigned">No class assigned</option></select></div>
-   <div class="field" style="flex:1;min-width:160px"><input id="attSearch" placeholder="Find student by name or roll"></div>
+ <header class="topbar">
+  <div class="brand">
+   <img class="logo" src="icons/icon-192.png" alt="" width="46" height="46">
+   <div>
+    <h1>Coaching Manager</h1>
+    <p>Attendance · Marks · Report cards</p>
+   </div>
   </div>
-  <div class="tablewrap"><table><thead><tr><th>Student</th><th>Attendance</th></tr></thead><tbody id="attendanceRows"></tbody></table></div>
-  <div class="sub" id="attendanceFoot" style="margin-top:12px"></div>
- </div>
-</section>
-<section class="panel" id="daywise">
- <div class="card glass">
-  <div class="sectionhead"><div><h2>Day-wise attendance records</h2><div class="sub">Every saved attendance entry, grouped by date</div></div><button class="btn" id="exportDaywise">Export CSV</button></div>
-  <div class="toolbar">
-   <div class="field"><label for="daywiseMonth">Month</label><input type="month" id="daywiseMonth"></div>
-   <button class="btn" id="daywiseAllDates" type="button">All dates</button>
-   <div class="field"><label for="daywiseClass">Class / group</label><select id="daywiseClass"><option value="all">All classes</option></select></div>
-   <div class="field" style="flex:1;min-width:150px"><label for="daywiseSearch">Search student</label><input id="daywiseSearch" placeholder="Name or roll number"></div>
+  <div class="actions">
+   <button class="btn install" id="installBtn" hidden><svg class="ic"><use href="#i-download"/></svg><span class="lbl">Install app</span></button>
+   <button class="btn" id="exportBtn" title="Download a backup"><svg class="ic"><use href="#i-download"/></svg><span class="lbl">Backup</span></button>
+   <button class="btn" id="importBtn" title="Restore a backup"><svg class="ic"><use href="#i-upload"/></svg><span class="lbl">Restore</span></button>
+   <input type="file" id="importFile" accept="application/json,.json" hidden>
   </div>
-  <div class="sub" id="daywiseSummary" style="margin:4px 0 12px"></div>
-  <div id="daywiseRecords"><div class="empty">No attendance records found.</div></div>
- </div>
-</section>
+ </header>
 
-<section class="panel" id="marks">
- <div class="card glass">
-  <div class="sectionhead"><div><h2>Enter student marks</h2><div class="sub">Monthly subject marks · each subject is out of 100</div></div></div>
-  <div class="toolbar">
-   <div class="field"><label for="marksMonth">Month</label><input type="month" id="marksMonth"></div>
-   <div class="field" style="flex:1;min-width:180px"><label for="marksStudent">Student</label><select id="marksStudent"><option value="">Choose a student</option></select></div>
-  </div>
-  <div id="marksEntry"><div class="empty">Choose a student to enter marks.</div></div>
+ <div class="nudge" id="backupHint" hidden>
+  <svg class="ic"><use href="#i-alert"/></svg>
+  <p id="backupHintText"></p>
+  <button class="btn sm" id="backupNow"><svg class="ic"><use href="#i-download"/></svg>Back up now</button>
  </div>
-</section>
-<section class="panel" id="marksReport">
- <div class="card glass reportprint">
-  <div class="sectionhead no-print"><div><h2>Monthly academic report card</h2><div class="sub">Subject-wise performance with attendance summary</div></div></div>
-  <div class="toolbar no-print">
-   <div class="field"><label for="marksReportMonth">Month</label><input type="month" id="marksReportMonth"></div>
-   <div class="field" style="flex:1;min-width:180px"><label for="marksReportStudent">Student</label><select id="marksReportStudent"><option value="">Choose a student</option></select></div>
-   <button class="btn primary" id="generateMarksReport">Generate report</button>
-   <button class="btn" id="printMarksReport">Print / Save PDF</button>
-  </div>
-  <div class="printtitle" style="display:none;text-align:center;margin-bottom:15px"><h2>Anant Education · Monthly Report Card</h2></div>
-  <div id="marksReportOutput"><div class="empty">Choose a month and student, then generate the report card.</div></div>
- </div>
-</section>
 
-<section class="panel" id="students">
- <div class="grid2">
-  <div class="card glass">
-   <div class="sectionhead"><div><h2 id="studentFormTitle">Add student</h2><div class="sub">Class is optional</div></div></div>
-   <form id="studentForm">
-    <div class="formgrid">
-     <div class="field full"><label>Student name *</label><input id="sName" required maxlength="70" placeholder="Full name"></div>
-     <div class="field"><label>Class / group</label><input id="sClass" maxlength="30" placeholder="e.g. Class 8"></div>
-     <div class="field"><label>Roll number</label><input id="sRoll" maxlength="25" placeholder="Optional"></div>
-     <div class="field"><label>Parent contact</label><input id="sPhone" inputmode="tel" maxlength="20" placeholder="Optional"></div>
-     <div class="field"><label>Admission date</label><input id="sJoin" type="date"></div>
+ <section class="hero">
+  <div class="eyebrow" id="todayLabel">Today</div>
+  <h2 id="heroDate">Attendance</h2>
+  <div class="herobar"><span id="markedText">0 of 0 marked</span>
+   <div class="bar"><i id="markedBar"></i></div>
+  </div>
+  <div class="stats">
+   <div class="stat"><small>Students</small><b id="totalStudents">0</b></div>
+   <div class="stat"><small>Present</small><b id="presentToday">0</b></div>
+   <div class="stat"><small>Absent</small><b id="absentToday">0</b></div>
+   <div class="stat"><small>Unmarked</small><b id="unmarkedToday">0</b></div>
+  </div>
+ </section>
+
+ <nav class="tabbar" role="tablist" aria-label="Sections">
+  <button class="tab active" role="tab" aria-selected="true" data-tab="attendance"><svg class="ic"><use href="#i-check"/></svg><span>Attendance</span></button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="daywise"><svg class="ic"><use href="#i-cal"/></svg><span>Day-wise</span></button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="students"><svg class="ic"><use href="#i-users"/></svg><span>Students</span></button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="marks"><svg class="ic"><use href="#i-pen"/></svg><span>Marks</span></button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="marksReport"><svg class="ic"><use href="#i-report"/></svg><span>Report</span></button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="reports"><svg class="ic"><use href="#i-card"/></svg><span>Cards</span></button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="settings"><svg class="ic"><use href="#i-sliders"/></svg><span>Settings</span></button>
+ </nav>
+
+ <!-- Attendance -->
+ <section class="panel active" id="attendance">
+  <div class="card">
+   <div class="ch">
+    <div class="chl">
+     <span class="ico"><svg class="ic"><use href="#i-check"/></svg></span>
+     <div><h2>Mark attendance</h2><p class="sub">Tap P, A or L. Tap the same button again to clear it.</p></div>
     </div>
-    <div class="actions" style="margin-top:14px"><button class="btn primary" type="submit" id="saveStudent">Save student</button><button class="btn" type="button" id="cancelEdit" hidden>Cancel</button></div>
-   </form>
+    <button class="btn primary sm" id="markAll">Mark all present</button>
+   </div>
+   <div class="toolbar">
+    <div class="field"><label for="attDate">Date</label><input type="date" id="attDate"></div>
+    <div class="field"><label for="attClass">Class / group</label><select id="attClass"></select></div>
+    <div class="field grow"><label for="attSearch">Search</label><input id="attSearch" type="search" placeholder="Name or roll number"></div>
+   </div>
+   <div class="rows" id="attendanceRows"></div>
+   <p class="sub" id="attendanceFoot" style="margin-top:12px"></p>
   </div>
-  <div class="card glass">
-   <div class="sectionhead"><div><h2>Student directory</h2><div class="sub" id="directoryCount">0 students</div></div></div>
-   <div class="toolbar"><input id="studentSearch" placeholder="Search students..." style="width:100%"><select id="studentClassFilter" style="width:100%"><option value="all">All classes and groups</option></select></div>
-   <div class="list" id="studentList"></div>
+ </section>
+
+ <!-- Day-wise -->
+ <section class="panel" id="daywise">
+  <div class="card">
+   <div class="ch">
+    <div class="chl">
+     <span class="ico"><svg class="ic"><use href="#i-cal"/></svg></span>
+     <div><h2>Day-wise records</h2><p class="sub">Every saved attendance entry, grouped by date</p></div>
+    </div>
+    <button class="btn sm" id="exportDaywise"><svg class="ic"><use href="#i-download"/></svg>Export CSV</button>
+   </div>
+   <div class="toolbar">
+    <div class="field"><label for="daywiseMonth">Month</label><input type="month" id="daywiseMonth"></div>
+    <button class="btn" id="daywiseAllDates" type="button">All dates</button>
+    <div class="field"><label for="daywiseClass">Class / group</label><select id="daywiseClass"></select></div>
+    <div class="field grow"><label for="daywiseSearch">Search student</label><input id="daywiseSearch" type="search" placeholder="Name or roll number"></div>
+   </div>
+   <div class="minis" id="daywiseSummary"></div>
+   <div id="daywiseRecords"></div>
   </div>
- </div>
-</section>
-<section class="panel" id="reports">
- <div class="card glass reportprint">
-  <div class="sectionhead no-print"><div><h2>Monthly attendance cards</h2><div class="sub">Generate an individual card or print a class report</div></div></div>
-  <div class="toolbar no-print">
-   <div class="field"><label>Month</label><input type="month" id="reportMonth"></div>
-   <div class="field" style="flex:1;min-width:180px"><label>Student</label><select id="reportStudent"><option value="">Choose a student</option></select></div>
-   <button class="btn primary" id="generateCard">Generate card</button>
-   <button class="btn" id="printCard">Print / Save PDF</button>
+ </section>
+
+ <!-- Marks entry -->
+ <section class="panel" id="marks">
+  <div class="card">
+   <div class="ch">
+    <div class="chl">
+     <span class="ico"><svg class="ic"><use href="#i-pen"/></svg></span>
+     <div><h2>Enter marks</h2><p class="sub">Monthly subject marks, each out of 100</p></div>
+    </div>
+   </div>
+   <div class="toolbar">
+    <div class="field"><label for="marksMonth">Month</label><input type="month" id="marksMonth"></div>
+    <div class="field grow"><label for="marksStudent">Student</label><select id="marksStudent"></select></div>
+   </div>
+   <div id="marksEntry"></div>
   </div>
-  <div class="printtitle" style="display:none;text-align:center;margin-bottom:15px"><h2>Anant Education · Monthly Attendance</h2></div>
-  <div id="reportOutput"><div class="empty">Choose a month and student, then generate an attendance card.</div></div>
- </div>
-</section>
-<section class="panel" id="settings">
- <div class="card glass"><h2 style="margin-top:0">Appearance</h2><p class="sub">Choose light, dark, or follow your phone's setting.</p><div class="seg"><button data-theme-choice="system" class="on">System</button><button data-theme-choice="light">Light</button><button data-theme-choice="dark">Dark</button></div></div>
- <div class="grid2">
-  <div class="card glass"><h2 style="margin-top:0">Institute & report cards</h2><p class="sub">This institute name will appear at the top of attendance and academic report cards.</p><div class="field"><label for="instituteName">Institute name</label><input id="instituteName" value="Anant Education" maxlength="80" placeholder="Enter institute name"></div><div class="field" style="margin-top:10px"><label>Low attendance alert threshold (%)</label><input id="threshold" type="number" min="1" max="100" value="75"></div><button class="btn primary" id="saveSettings" style="margin-top:13px">Save settings</button><div class="sub" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--sep)">Made by <strong style="color:var(--label)">Raj</strong></div></div>
-  <div class="card glass"><h2 style="margin-top:0">Data & privacy</h2><p class="sub">Student records and attendance are saved in this browser on this device. No account or internet connection is needed for daily use.</p><div class="actions"><button class="btn" id="exportBtn2">Download backup</button><button class="btn" id="importBtn2">Restore backup</button></div><div class="hint">Important: browser data can be cleared by device cleanup or browser reset. Download a backup regularly and keep it somewhere safe.</div><button class="btn danger" id="clearData">Delete all app data</button></div>
- </div>
-</section>
-<div class="foot">Manager · Records stay on this device</div>
+ </section>
+
+ <!-- Marks report -->
+ <section class="panel" id="marksReport">
+  <div class="card">
+   <div class="ch no-print">
+    <div class="chl">
+     <span class="ico"><svg class="ic"><use href="#i-report"/></svg></span>
+     <div><h2>Report card</h2><p class="sub">Subject-wise performance with an attendance summary</p></div>
+    </div>
+   </div>
+   <div class="toolbar no-print">
+    <div class="field"><label for="marksReportMonth">Month</label><input type="month" id="marksReportMonth"></div>
+    <div class="field grow"><label for="marksReportStudent">Student</label><select id="marksReportStudent"></select></div>
+    <button class="btn primary" id="generateMarksReport">Generate</button>
+    <button class="btn" id="printMarksReport"><svg class="ic"><use href="#i-print"/></svg>Print / PDF</button>
+   </div>
+   <div id="marksReportOutput"><div class="empty">Choose a month and student, then generate the report card.</div></div>
+  </div>
+ </section>
+
+ <!-- Students -->
+ <section class="panel" id="students">
+  <div class="grid2">
+   <div class="card">
+    <div class="ch">
+     <div class="chl">
+      <span class="ico"><svg class="ic"><use href="#i-plus"/></svg></span>
+      <div><h2 id="studentFormTitle">Add student</h2><p class="sub">Class and roll number are optional</p></div>
+     </div>
+    </div>
+    <form id="studentForm">
+     <div class="formgrid">
+      <div class="field full"><label for="sName">Student name *</label><input id="sName" required maxlength="70" placeholder="Full name" autocomplete="off"></div>
+      <div class="field"><label for="sClass">Class / group</label><input id="sClass" list="classOptions" maxlength="30" placeholder="e.g. Class 8" autocomplete="off"></div>
+      <div class="field"><label for="sRoll">Roll number</label><input id="sRoll" maxlength="25" placeholder="Optional" autocomplete="off"></div>
+      <div class="field"><label for="sPhone">Parent contact</label><input id="sPhone" inputmode="tel" maxlength="20" placeholder="Optional"></div>
+      <div class="field"><label for="sJoin">Admission date</label><input id="sJoin" type="date"></div>
+     </div>
+     <datalist id="classOptions"></datalist>
+     <div class="actions" style="margin-top:16px">
+      <button class="btn primary" type="submit" id="saveStudent">Save student</button>
+      <button class="btn" type="button" id="cancelEdit" hidden>Cancel</button>
+     </div>
+    </form>
+   </div>
+   <div class="card">
+    <div class="ch">
+     <div class="chl">
+      <span class="ico"><svg class="ic"><use href="#i-users"/></svg></span>
+      <div><h2>Student directory</h2><p class="sub" id="directoryCount">0 active students</p></div>
+     </div>
+    </div>
+    <div class="toolbar">
+     <div class="field grow"><label for="studentSearch">Search</label><input id="studentSearch" type="search" placeholder="Name, roll or phone"></div>
+     <div class="field"><label for="studentClassFilter">Class / group</label><select id="studentClassFilter"></select></div>
+    </div>
+    <div class="list" id="studentList"></div>
+   </div>
+  </div>
+ </section>
+
+ <!-- Attendance cards -->
+ <section class="panel" id="reports">
+  <div class="card">
+   <div class="ch no-print">
+    <div class="chl">
+     <span class="ico"><svg class="ic"><use href="#i-card"/></svg></span>
+     <div><h2>Attendance card</h2><p class="sub">A monthly attendance summary for one student</p></div>
+    </div>
+   </div>
+   <div class="toolbar no-print">
+    <div class="field"><label for="reportMonth">Month</label><input type="month" id="reportMonth"></div>
+    <div class="field grow"><label for="reportStudent">Student</label><select id="reportStudent"></select></div>
+    <button class="btn primary" id="generateCard">Generate</button>
+    <button class="btn" id="printCard"><svg class="ic"><use href="#i-print"/></svg>Print / PDF</button>
+   </div>
+   <div id="reportOutput"><div class="empty">Choose a month and student, then generate an attendance card.</div></div>
+  </div>
+ </section>
+
+ <!-- Settings -->
+ <section class="panel" id="settings">
+  <div class="stack">
+   <div class="card">
+    <h2>Appearance</h2>
+    <p class="sub">Light, dark, or follow your phone's setting.</p>
+    <div class="seg" style="margin-top:12px" role="group" aria-label="Theme">
+     <button data-theme-choice="system" aria-pressed="true">System</button>
+     <button data-theme-choice="light" aria-pressed="false">Light</button>
+     <button data-theme-choice="dark" aria-pressed="false">Dark</button>
+    </div>
+   </div>
+   <div class="grid2">
+    <div class="card">
+     <h2>Coaching details</h2>
+     <div class="stack" style="gap:12px">
+      <div class="field"><label for="instituteName">Institute name on cards</label><input id="instituteName" maxlength="60"></div>
+      <div class="field"><label for="threshold">Low attendance alert (%)</label><input id="threshold" type="number" min="1" max="100" inputmode="numeric"></div>
+      <div><button class="btn primary" id="saveSettings">Save settings</button></div>
+     </div>
+    </div>
+    <div class="card">
+     <h2>Data &amp; privacy</h2>
+     <p class="sub">Records are saved in this browser on this device. No account or internet connection is needed for daily use.</p>
+     <p class="sub" id="lastBackupText" style="margin-top:8px;font-weight:600"></p>
+     <div class="actions" style="margin-top:14px">
+      <button class="btn" id="exportBtn2"><svg class="ic"><use href="#i-download"/></svg>Download backup</button>
+      <button class="btn" id="importBtn2"><svg class="ic"><use href="#i-upload"/></svg>Restore backup</button>
+     </div>
+     <p class="note">Browser data can be wiped by device cleanup or a browser reset. Download a backup regularly and keep it somewhere safe.</p>
+     <div style="margin-top:14px"><button class="btn danger" id="clearData"><svg class="ic"><use href="#i-trash"/></svg>Delete all app data</button></div>
+    </div>
+   </div>
+   <div class="card about">
+    <img src="icons/icon-192.png" alt="Coaching Manager icon" width="68" height="68">
+    <h3>Coaching Manager</h3>
+    <p class="sub">Version 2.0 · Works offline · Private by design</p>
+    <div class="madeby"><svg class="ic" style="color:#e11d48"><use href="#i-heart"/></svg>Made by <b>Jack</b></div>
+   </div>
+  </div>
+ </section>
+
+ <div class="sub" style="text-align:center;margin-top:24px">Coaching Manager · Records stay on this device</div>
 </div>
-<div class="modal" id="confirmModal"><div class="dialog"><div class="dialoghead"><h2 id="confirmTitle">Confirm action</h2><button class="close" id="confirmClose">×</button></div><p id="confirmText"></p><div class="actions"><button class="btn" id="confirmCancel">Cancel</button><button class="btn danger" id="confirmYes">Continue</button></div></div></div>
-<div class="toast" id="toast"></div>
+
+<div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+ <div class="dialog">
+  <h2 id="confirmTitle">Confirm action</h2>
+  <p id="confirmText"></p>
+  <div class="actions">
+   <button class="btn" id="confirmCancel">Cancel</button>
+   <button class="btn danger" id="confirmYes">Continue</button>
+  </div>
+ </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <script>
-(()=> {
+(()=>{
+'use strict';
 const $=id=>document.getElementById(id);
-const KEY='anantAttendance.v1';
-const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+
+/* ---------- Constants & storage keys ---------- */
+const APP_NAME='Coaching Manager';
+const KEY='coachingManager.v1', OLD_KEY='anantAttendance.v1';           // OLD_KEY: migrates data from the previous app
+const THEME_KEY='coachingManager.theme', OLD_THEME_KEY='anantAttendance.theme';
+const BACKUP_KEY='coachingManager.lastBackup';
+const DEFAULT_INSTITUTE='Anant Education';
+const SUBJECTS=['English','Hindi','Mathematics','Science','Social Science','Computer','General Knowledge'];
+const STATUSES=['P','A','L'];
+const STATUS_LABEL={P:'Present',A:'Absent',L:'Leave'};
+const DAY_PAGE=30;
+
+/* ---------- Helpers ---------- */
+const pad=n=>String(n).padStart(2,'0');
+const dateKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today=()=>dateKey(new Date());
 const monthNow=()=>today().slice(0,7);
-let data={students:[],attendance:{},marks:{},settings:{institute:'Anant Education',threshold:75}};
-let editingId=null, pendingConfirm=null, deferredPrompt=null;
-try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&Array.isArray(saved.students)&&saved.attendance)data={...data,...saved,marks:saved.marks||{},settings:{...data.settings,...saved.settings}}}catch(e){}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));return true}catch(e){toast('Storage is full. Export a backup and remove unused photos or records.');return false}};
-const uid=()=>`s${Date.now().toString(36)}${Math.random().toString(36).slice(2,7)}`;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const cls=s=>(s||'').trim();
-const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)};
+const uid=()=>`s${Date.now().toString(36)}${Math.random().toString(36).slice(2,7)}`;
 const fmtDate=s=>new Date(s+'T00:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+const longDate=s=>new Date(s+'T00:00:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
+const weekday=s=>new Date(s+'T00:00:00').toLocaleDateString(undefined,{weekday:'short'});
+const monthName=m=>new Date(m+'-01T00:00:00').toLocaleDateString(undefined,{month:'long',year:'numeric'});
 const initials=n=>n.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
-const statuses=['P','A','L'];
-const record=(id,date)=>data.attendance[date]?.[id]||'';
-const setStatus=(id,date,status)=>{data.attendance[date]??={};if(status)data.attendance[date][id]=status;else delete data.attendance[date][id];if(!Object.keys(data.attendance[date]).length)delete data.attendance[date];save();renderAttendance();renderDashboard();if($('daywise').classList.contains('active'))renderDaywise()};
-const activeStudents=()=>data.students.filter(s=>!s.archived);
-function setTab(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===name));if(name==='reports')refreshReportSelect();if(name==='students')renderStudents();if(name==='daywise')renderDaywise();if(name==='marks'||name==='marksReport')refreshMarksStudents()}
-document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
-$('attDate').value=today();$('reportMonth').value=monthNow();$('daywiseMonth').value=monthNow();$('marksMonth').value=monthNow();$('marksReportMonth').value=monthNow();$('sJoin').value=today();
-function renderDashboard(){const all=activeStudents(),date=$('attDate').value||today(),vals=all.map(s=>record(s.id,date));$('totalStudents').textContent=all.length;$('presentToday').textContent=vals.filter(v=>v==='P').length;$('absentToday').textContent=vals.filter(v=>v==='A').length;$('unmarkedToday').textContent=vals.filter(v=>!v).length;$('todayLabel').textContent='DAILY ATTENDANCE · '+fmtDate(date).toUpperCase();$('heroDate').textContent=new Date(date+'T00:00:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});}
-function classes(){return [...new Set(activeStudents().map(s=>cls(s.className)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}))}
-function refreshClassOptions(){const opts=classes();const fill=(el,allText)=>{const old=el.value;el.innerHTML=`<option value="all">${allText}</option><option value="__unassigned">No class assigned</option>`+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old};fill($('attClass'),'Everyone');const f=$('studentClassFilter'),old=f.value;f.innerHTML='<option value="all">All classes and groups</option>'+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...f.options].some(o=>o.value===old))f.value=old;const df=$('daywiseClass'),dold=df.value;df.innerHTML='<option value="all">All classes</option><option value="__unassigned">No class assigned</option>'+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...df.options].some(o=>o.value===dold))df.value=dold;}
-function renderAttendance(){const date=$('attDate').value||today(),filter=$('attClass').value,search=$('attSearch').value.toLowerCase().trim();let list=activeStudents().filter(s=>(filter==='all'||(filter==='__unassigned'?!cls(s.className):cls(s.className)===filter))&&(`${s.name} ${s.roll||''}`.toLowerCase().includes(search)));list.sort((a,b)=>(a.className||'').localeCompare(b.className||'')||a.name.localeCompare(b.name));$('attendanceRows').innerHTML=list.length?list.map(s=>`<tr><td><div class="studentname">${esc(s.name)}</div><div class="studentmeta">${esc(s.className||'No class')} · ${s.roll?'Roll '+esc(s.roll):'No roll'}</div></td><td><div class="statusgroup">${statuses.map(v=>`<button class="status ${record(s.id,date)===v?'on':''}" data-v="${v}" data-id="${s.id}" aria-label="${v==='P'?'Present':v==='A'?'Absent':'Leave'}">${v}</button>`).join('')}</div></td></tr>`).join(''):'<tr><td colspan="2" class="empty">No students yet. Add them in Students.</td></tr>';$('attendanceFoot').textContent=`${list.length} student${list.length===1?'':'s'} · P Present · A Absent · L Leave`;renderDashboard()}
-$('attendanceRows').addEventListener('click',e=>{const b=e.target.closest('button[data-id]');if(!b)return;const id=b.dataset.id,date=$('attDate').value,v=b.dataset.v;setStatus(id,date,record(id,date)===v?'':v)});
-$('attDate').addEventListener('change',()=>{renderAttendance();renderDashboard()});$('attClass').addEventListener('change',renderAttendance);$('attSearch').addEventListener('input',renderAttendance);
-$('markAll').addEventListener('click',()=>{const date=$('attDate').value||today(),filter=$('attClass').value;const list=activeStudents().filter(s=>filter==='all'||(filter==='__unassigned'?!cls(s.className):cls(s.className)===filter));if(!list.length)return toast('No students in this selection.');data.attendance[date]??={};list.forEach(s=>data.attendance[date][s.id]='P');save();renderAttendance();toast(`Marked ${list.length} students present.`)});
-function resetForm(){editingId=null;$('studentForm').reset();$('sJoin').value=today();$('studentFormTitle').textContent='Add student';$('saveStudent').textContent='Save student';$('cancelEdit').hidden=true}
-$('studentForm').addEventListener('submit',e=>{e.preventDefault();const name=$('sName').value.trim();if(!name)return;const item={id:editingId||uid(),name,className:cls($('sClass').value),roll:$('sRoll').value.trim(),phone:$('sPhone').value.trim(),joined:$('sJoin').value||today()};if(editingId){data.students=data.students.map(s=>s.id===editingId?{...s,...item}:s)}else data.students.push(item);save();resetForm();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();refreshMarksStudents();toast(editingId?'Student updated.':'Student added.')});
+const hueOf=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
+const avatar=name=>`<span class="avatar" style="--h:${hueOf(name)}">${esc(initials(name)||'?')}</span>`;
+const naturalSort=(a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true,sensitivity:'base'});
+const byClass=(a,b)=>{const x=cls(a.className),y=cls(b.className);if(x===y)return a.name.localeCompare(b.name);if(!x)return 1;if(!y)return -1;return naturalSort(x,y)};
+const gradeOf=pct=>pct>=90?'A+':pct>=80?'A':pct>=70?'B':pct>=60?'C':pct>=50?'D':pct>=33?'E':'Needs improvement';
+const instituteName=()=>(data.settings.institute||DEFAULT_INSTITUTE).trim()||DEFAULT_INSTITUTE;
+const threshold=()=>Number(data.settings.threshold)||75;
+const matchClass=(s,filter)=>filter==='all'||(filter==='__unassigned'?!cls(s.className):cls(s.className)===filter);
+
+/* ---------- State ---------- */
+let data={students:[],attendance:{},marks:{},settings:{institute:DEFAULT_INSTITUTE,threshold:75}};
+let editingId=null, pendingConfirm=null, deferredPrompt=null, toastTimer=0, dayLimit=DAY_PAGE;
+try{
+ const saved=JSON.parse(localStorage.getItem(KEY)??localStorage.getItem(OLD_KEY)??'null');
+ if(saved&&Array.isArray(saved.students)&&saved.attendance&&typeof saved.attendance==='object'){
+  data={...data,...saved,marks:saved.marks||{},settings:{...data.settings,...(saved.settings||{})}};
+ }
+}catch(e){}
+
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify(data));return true}
+ catch(e){toast('Browser storage is full. Download a backup, then remove old records.');return false}
+}
+function toast(msg){
+ const t=$('toast');t.textContent=msg;t.classList.add('show');
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
+}
+function activeStudents(){return data.students.filter(s=>!s.archived)}
+function record(id,date){return data.attendance[date]?.[id]||''}
+function monthRecords(id,month){
+ const days=Object.keys(data.attendance).filter(d=>d.startsWith(month)).sort();
+ let p=0,a=0,l=0;const detail=[];
+ days.forEach(d=>{const v=data.attendance[d]?.[id];if(!v)return;if(v==='P')p++;else if(v==='A')a++;else if(v==='L')l++;detail.push({date:d,status:v})});
+ const counted=p+a,pct=counted?Math.round(p/counted*100):0;
+ return{p,a,l,marked:detail.length,counted,pct,detail};
+}
+function classes(){return [...new Set(activeStudents().map(s=>cls(s.className)).filter(Boolean))].sort(naturalSort)}
+function fillSelect(el,firstLabel,withUnassigned,names){
+ const old=el.value;
+ el.innerHTML=`<option value="all">${firstLabel}</option>`+(withUnassigned?'<option value="__unassigned">No class assigned</option>':'')+names.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+ el.value=[...el.options].some(o=>o.value===old)?old:'all';
+}
+
+/* ---------- Attendance ---------- */
+function setStatus(id,date,status){
+ data.attendance[date]??={};
+ if(status)data.attendance[date][id]=status;else delete data.attendance[date][id];
+ if(!Object.keys(data.attendance[date]).length)delete data.attendance[date];
+ save();renderAttendance();
+ if($('daywise').classList.contains('active'))renderDaywise();
+}
+function renderHero(){
+ const all=activeStudents(),date=$('attDate').value||today(),vals=all.map(s=>record(s.id,date));
+ const present=vals.filter(v=>v==='P').length,absent=vals.filter(v=>v==='A').length,unmarked=vals.filter(v=>!v).length,marked=all.length-unmarked;
+ $('totalStudents').textContent=all.length;
+ $('presentToday').textContent=present;
+ $('absentToday').textContent=absent;
+ $('unmarkedToday').textContent=unmarked;
+ $('markedText').textContent=`${marked} of ${all.length} marked`;
+ $('markedBar').style.width=(all.length?marked/all.length*100:0)+'%';
+ $('todayLabel').textContent=date===today()?'Today':'Selected date';
+ $('heroDate').textContent=longDate(date);
+}
+function renderAttendance(){
+ const date=$('attDate').value||today(),filter=$('attClass').value,q=$('attSearch').value.toLowerCase().trim();
+ const list=activeStudents()
+  .filter(s=>matchClass(s,filter)&&`${s.name} ${s.roll||''}`.toLowerCase().includes(q))
+  .sort(byClass);
+ $('attendanceRows').innerHTML=list.length?list.map(s=>{
+  const v=record(s.id,date);
+  return `<div class="srow">
+   <div class="who">${avatar(s.name)}<div class="txt"><div class="name">${esc(s.name)}</div><div class="meta">${esc(cls(s.className)||'No class')}${s.roll?' · Roll '+esc(s.roll):''}</div></div></div>
+   <div class="seg3" role="group" aria-label="Attendance for ${esc(s.name)}">${STATUSES.map(x=>`<button class="st ${x} ${v===x?'on':''}" data-v="${x}" data-id="${s.id}" aria-pressed="${v===x}" title="${STATUS_LABEL[x]}">${x}</button>`).join('')}</div>
+  </div>`;
+ }).join(''):`<div class="empty">${data.students.length?'No students match this filter.':'No students yet. Add them in the Students tab.'}</div>`;
+ const counts={P:0,A:0,L:0};
+ list.forEach(s=>{const v=record(s.id,date);if(counts[v]!==undefined)counts[v]++});
+ $('attendanceFoot').textContent=`${list.length} student${list.length===1?'':'s'} · ${counts.P} present · ${counts.A} absent · ${counts.L} on leave`;
+ renderHero();
+}
+$('attendanceRows').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-id]');if(!b)return;
+ const id=b.dataset.id,date=$('attDate').value||today(),v=b.dataset.v;
+ setStatus(id,date,record(id,date)===v?'':v);
+});
+$('attDate').addEventListener('change',renderAttendance);
+$('attClass').addEventListener('change',renderAttendance);
+$('attSearch').addEventListener('input',renderAttendance);
+$('markAll').addEventListener('click',()=>{
+ const date=$('attDate').value||today(),filter=$('attClass').value;
+ const list=activeStudents().filter(s=>matchClass(s,filter));
+ if(!list.length)return toast('No students in this selection.');
+ const unmarked=list.filter(s=>!record(s.id,date));
+ if(!unmarked.length)return toast('Everyone in this selection is already marked.');
+ data.attendance[date]??={};
+ unmarked.forEach(s=>data.attendance[date][s.id]='P');
+ save();renderAttendance();
+ toast(`Marked ${unmarked.length} unmarked student${unmarked.length===1?'':'s'} present.`);
+});
+
+/* ---------- Students ---------- */
+function resetForm(){
+ editingId=null;$('studentForm').reset();$('sJoin').value=today();
+ $('studentFormTitle').textContent='Add student';$('saveStudent').textContent='Save student';$('cancelEdit').hidden=true;
+}
+$('studentForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const name=$('sName').value.trim();if(!name)return;
+ const wasEditing=editingId;
+ const existing=wasEditing?data.students.find(s=>s.id===wasEditing):null;
+ const item={...(existing||{}),id:wasEditing||uid(),name,className:cls($('sClass').value),roll:$('sRoll').value.trim(),phone:$('sPhone').value.trim(),joined:$('sJoin').value||today()};
+ if(wasEditing)data.students=data.students.map(s=>s.id===wasEditing?item:s);
+ else data.students.push(item);
+ save();resetForm();refreshAll();
+ toast(wasEditing?'Student updated.':'Student added.');
+});
 $('cancelEdit').addEventListener('click',resetForm);
-function renderStudents(){const q=$('studentSearch').value.toLowerCase().trim(),f=$('studentClassFilter').value;const list=activeStudents().filter(s=>(f==='all'||cls(s.className)===f)&&(`${s.name} ${s.roll||''} ${s.phone||''}`.toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));$('directoryCount').textContent=`${activeStudents().length} active students`;$('studentList').innerHTML=list.length?list.map(s=>`<div class="studentrow"><div class="studentleft"><div class="avatar">${esc(initials(s.name))}</div><div style="min-width:0"><strong>${esc(s.name)}</strong><small>${esc(s.className||'No class')} · ${s.roll?'Roll '+esc(s.roll):'No roll number'}</small></div></div><div class="actions"><button class="btn" data-edit="${s.id}">Edit</button><button class="btn danger" data-archive="${s.id}">Remove</button></div></div>`).join(''):'<div class="empty">No students yet. Add your first student using the form.</div>'}
-$('studentSearch').addEventListener('input',renderStudents);$('studentClassFilter').addEventListener('change',renderStudents);
-$('studentList').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]')?.dataset.edit,del=e.target.closest('[data-archive]')?.dataset.archive;if(edit){const s=data.students.find(x=>x.id===edit);if(!s)return;editingId=s.id;$('sName').value=s.name;$('sClass').value=s.className||'';$('sRoll').value=s.roll||'';$('sPhone').value=s.phone||'';$('sJoin').value=s.joined||'';$('studentFormTitle').textContent='Edit student';$('saveStudent').textContent='Update student';$('cancelEdit').hidden=false;window.scrollTo({top:0,behavior:'smooth'})}if(del){const s=data.students.find(x=>x.id===del);confirmAction('Remove student',`Remove ${s?.name||'this student'} from the active directory? Their past attendance records will be kept in your data backup but will no longer appear in reports.`,()=>{data.students=data.students.map(x=>x.id===del?{...x,archived:true}:x);save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();renderDaywise();toast('Student removed from active list.')})}});
+function renderStudents(){
+ const q=$('studentSearch').value.toLowerCase().trim(),f=$('studentClassFilter').value,month=monthNow(),th=threshold();
+ const n=activeStudents().length;
+ const list=activeStudents()
+  .filter(s=>matchClass(s,f)&&`${s.name} ${s.roll||''} ${s.phone||''}`.toLowerCase().includes(q))
+  .sort(byClass);
+ $('directoryCount').textContent=`${n} active student${n===1?'':'s'}`;
+ $('studentList').innerHTML=list.length?list.map(s=>{
+  const r=monthRecords(s.id,month);
+  const pillCls=r.counted?(r.pct>=th?'ok':'warn'):'';
+  return `<div class="stu">
+   <div class="who">${avatar(s.name)}<div class="txt"><div class="name">${esc(s.name)}</div><div class="meta">${esc(cls(s.className)||'No class')}${s.roll?' · Roll '+esc(s.roll):''}${s.phone?' · '+esc(s.phone):''}</div></div></div>
+   <div class="stu-end">
+    <span class="pill ${pillCls}" title="Attendance this month">${r.counted?r.pct+'% this month':'No marks this month'}</span>
+    <button class="icon-btn" data-edit="${s.id}" aria-label="Edit ${esc(s.name)}" title="Edit"><svg class="ic"><use href="#i-pen"/></svg></button>
+    <button class="icon-btn danger" data-archive="${s.id}" aria-label="Remove ${esc(s.name)}" title="Remove"><svg class="ic"><use href="#i-trash"/></svg></button>
+   </div>
+  </div>`;
+ }).join(''):`<div class="empty">${n?'No students match your search.':'No students yet. Add your first student using the form.'}</div>`;
+}
+$('studentSearch').addEventListener('input',renderStudents);
+$('studentClassFilter').addEventListener('change',renderStudents);
+$('studentList').addEventListener('click',e=>{
+ const editId=e.target.closest('[data-edit]')?.dataset.edit;
+ const delId=e.target.closest('[data-archive]')?.dataset.archive;
+ if(editId){
+  const s=data.students.find(x=>x.id===editId);if(!s)return;
+  editingId=s.id;
+  $('sName').value=s.name;$('sClass').value=cls(s.className);$('sRoll').value=s.roll||'';$('sPhone').value=s.phone||'';$('sJoin').value=s.joined||today();
+  $('studentFormTitle').textContent='Edit student';$('saveStudent').textContent='Update student';$('cancelEdit').hidden=false;
+  $('sName').focus();window.scrollTo({top:0,behavior:'smooth'});
+ }
+ if(delId){
+  const s=data.students.find(x=>x.id===delId);
+  confirmAction('Remove student',`Remove ${s?.name||'this student'} from the active list? Their past attendance stays in day-wise history and backups, but they will no longer appear in reports or marks.`,()=>{
+   data.students=data.students.map(x=>x.id===delId?{...x,archived:true}:x);
+   save();refreshAll();toast('Student removed from the active list.');
+  },'Remove');
+ }
+});
+
+/* ---------- Day-wise ---------- */
 function daywiseEntries(){
  const month=$('daywiseMonth').value,filter=$('daywiseClass').value,q=$('daywiseSearch').value.toLowerCase().trim();
  const byId=new Map(data.students.map(s=>[s.id,s]));const entries=[];
  Object.keys(data.attendance).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
   if(month&&!date.startsWith(month))return;
   Object.entries(data.attendance[date]||{}).forEach(([id,status])=>{
-   if(!statuses.includes(status))return;const student=byId.get(id);if(!student)return;
-   const className=cls(student.className);
-   if(filter==='__unassigned'&&className)return;if(filter!=='all'&&filter!=='__unassigned'&&className!==filter)return;
+   if(!STATUSES.includes(status))return;
+   const student=byId.get(id);if(!student)return;
+   if(!matchClass(student,filter))return;
    if(q&&!`${student.name} ${student.roll||''}`.toLowerCase().includes(q))return;
    entries.push({date,id,status,student});
   });
- });return entries;
+ });
+ return entries;
 }
 function renderDaywise(){
- const entries=daywiseEntries(),groups=new Map();entries.forEach(x=>{if(!groups.has(x.date))groups.set(x.date,[]);groups.get(x.date).push(x)});
- const total=entries.length,p=entries.filter(x=>x.status==='P').length,a=entries.filter(x=>x.status==='A').length,l=entries.filter(x=>x.status==='L').length;
- $('daywiseSummary').textContent=`${groups.size} day${groups.size===1?'':'s'} · ${total} records · ${p} present · ${a} absent · ${l} leave`;
- $('daywiseRecords').innerHTML=groups.size?[...groups.entries()].map(([date,rows])=>{const counts={P:0,A:0,L:0};rows.forEach(x=>counts[x.status]++);rows.sort((x,y)=>x.student.name.localeCompare(y.student.name));return `<div class="daygroup"><div class="daygrouphead"><strong>${esc(fmtDate(date))} · ${new Date(date+'T00:00:00').toLocaleDateString(undefined,{weekday:'long'})}</strong><div class="daycounts"><span class="daycount p">P ${counts.P}</span><span class="daycount a">A ${counts.A}</span><span class="daycount l">L ${counts.L}</span></div></div>${rows.map(x=>`<div class="dayrecord"><div><strong>${esc(x.student.name)}</strong><small>${esc(x.student.className||'No class')}${x.student.roll?' · Roll '+esc(x.student.roll):''}</small></div><span class="daystatus ${x.status}">${x.status==='P'?'Present':x.status==='A'?'Absent':'Leave'}</span></div>`).join('')}</div>`}).join(''):'<div class="empty">No attendance records match these filters.</div>';
+ const entries=daywiseEntries(),groups=new Map();
+ entries.forEach(x=>{if(!groups.has(x.date))groups.set(x.date,[]);groups.get(x.date).push(x)});
+ const dates=[...groups.keys()],shown=dates.slice(0,dayLimit);
+ const p=entries.filter(x=>x.status==='P').length,a=entries.filter(x=>x.status==='A').length,l=entries.filter(x=>x.status==='L').length;
+ $('daywiseSummary').innerHTML=`<div class="mini"><small>Days</small><b>${dates.length}</b></div><div class="mini"><small>Present</small><b>${p}</b></div><div class="mini"><small>Absent</small><b>${a}</b></div><div class="mini"><small>Leave</small><b>${l}</b></div>`;
+ let html=shown.map(date=>{
+  const rows=groups.get(date).slice().sort((x,y)=>x.student.name.localeCompare(y.student.name));
+  const counts={P:0,A:0,L:0};rows.forEach(x=>counts[x.status]++);
+  return `<div class="dgroup"><div class="dhead"><div><strong>${esc(fmtDate(date))}</strong><span class="sub"> · ${esc(weekday(date))}</span></div><div class="counts"><span class="tag P">P ${counts.P}</span><span class="tag A">A ${counts.A}</span><span class="tag L">L ${counts.L}</span></div></div>${rows.map(x=>`<div class="drow"><div class="who">${avatar(x.student.name)}<div class="txt"><div class="name">${esc(x.student.name)}</div><div class="meta">${esc(cls(x.student.className)||'No class')}${x.student.roll?' · Roll '+esc(x.student.roll):''}</div></div></div><span class="stlabel ${x.status}">${STATUS_LABEL[x.status]}</span></div>`).join('')}</div>`;
+ }).join('');
+ if(dates.length>shown.length)html+=`<button class="btn block" id="moreDays">Show ${Math.min(DAY_PAGE,dates.length-shown.length)} older days</button>`;
+ $('daywiseRecords').innerHTML=dates.length?html:'<div class="empty">No attendance records match these filters.</div>';
 }
-$('daywiseMonth').addEventListener('change',renderDaywise);$('daywiseClass').addEventListener('change',renderDaywise);$('daywiseSearch').addEventListener('input',renderDaywise);
-$('daywiseAllDates').addEventListener('click',()=>{$('daywiseMonth').value='';renderDaywise()});
-$('exportDaywise').addEventListener('click',()=>{const rows=daywiseEntries();if(!rows.length)return toast('No records to export.');const csv=[['Date','Student','Class / group','Roll number','Status'],...rows.map(x=>[x.date,x.student.name,x.student.className||'',x.student.roll||'',x.status==='P'?'Present':x.status==='A'?'Absent':'Leave'])].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`anant-day-wise-attendance-${today()}.csv`;a.click();URL.revokeObjectURL(a.href);toast('Day-wise CSV exported.')});
+$('daywiseRecords').addEventListener('click',e=>{if(e.target.closest('#moreDays')){dayLimit+=DAY_PAGE;renderDaywise()}});
+['daywiseMonth','daywiseClass'].forEach(id=>$(id).addEventListener('change',()=>{dayLimit=DAY_PAGE;renderDaywise()}));
+$('daywiseSearch').addEventListener('input',()=>{dayLimit=DAY_PAGE;renderDaywise()});
+$('daywiseAllDates').addEventListener('click',()=>{$('daywiseMonth').value='';dayLimit=DAY_PAGE;renderDaywise()});
+$('exportDaywise').addEventListener('click',()=>{
+ const rows=daywiseEntries();if(!rows.length)return toast('No records to export.');
+ const csv=[['Date','Student','Class / group','Roll number','Status'],...rows.map(x=>[x.date,x.student.name,x.student.className||'',x.student.roll||'',STATUS_LABEL[x.status]])]
+  .map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ download(`coaching-manager-day-wise-${today()}.csv`,new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}));
+ toast('Day-wise CSV exported.');
+});
 
-const SUBJECTS=['English','Hindi','Mathematics','Science','Social Science','Computer','General Knowledge'];
-function refreshMarksStudents(){
- const fill=sel=>{const old=sel.value;sel.innerHTML='<option value="">Choose a student</option>'+activeStudents().slice().sort((a,b)=>a.name.localeCompare(b.name)).map(s=>`<option value="${s.id}">${esc(s.name)}${s.className?' · '+esc(s.className):''}</option>`).join('');if([...sel.options].some(o=>o.value===old))sel.value=old};
- fill($('marksStudent'));fill($('marksReportStudent'));
- if($('marksStudent').value)renderMarksEntry();
+/* ---------- Marks ---------- */
+const getMarkSet=(month,id)=>data.marks?.[month]?.[id]||{};
+function computeResult(scores){
+ const entries=SUBJECTS.filter(s=>scores[s]!==undefined).map(s=>({subject:s,mark:Number(scores[s])}));
+ const total=entries.reduce((t,x)=>t+x.mark,0),max=entries.length*100,pct=max?total/max*100:0;
+ return{entries,total,max,pct,grade:gradeOf(pct)};
 }
-function getMarkSet(month,id){return data.marks?.[month]?.[id]||{}}
+function readMarkInputs(){
+ const scores={};let bad=null;
+ SUBJECTS.forEach((sub,i)=>{
+  const raw=$(`mark_${i}`).value.trim();if(raw==='')return;
+  const n=Number(raw);
+  if(!Number.isFinite(n)||n<0||n>100){bad=bad||sub;return}
+  scores[sub]=n;
+ });
+ return{scores,bad};
+}
+function updateMarkPreview(){
+ const el=$('mpreview');if(!el)return;
+ const{scores,bad}=readMarkInputs(),r=computeResult(scores);
+ el.innerHTML=(r.entries.length?`
+  <div class="mini"><small>Total</small><b>${r.total} / ${r.max}</b></div>
+  <div class="mini"><small>Percentage</small><b>${r.pct.toFixed(1)}%</b></div>
+  <div class="mini"><small>Grade</small><b>${esc(r.grade)}</b></div>`:'<div class="mpreview-note">Enter at least one subject to see the total.</div>')
+  +(bad?`<div class="mpreview-note" style="color:var(--bad)">Check ${esc(bad)}: marks must be between 0 and 100.</div>`:'');
+}
 function renderMarksEntry(){
  const id=$('marksStudent').value,month=$('marksMonth').value;
  if(!id||!month){$('marksEntry').innerHTML='<div class="empty">Choose a student and month to enter marks.</div>';return}
- const saved=getMarkSet(month,id);
- $('marksEntry').innerHTML=`<div class="sub" style="margin:4px 0 12px">Enter marks from 0 to 100 for each subject. Leave a field blank if the subject was not assessed.</div><div class="marksgrid">${SUBJECTS.map((sub,i)=>`<div class="markfield"><label for="mark_${i}">${sub} <span class="muted">/ 100</span></label><input type="number" id="mark_${i}" min="0" max="100" step="1" inputmode="numeric" placeholder="Enter marks" value="${saved[sub]??''}"></div>`).join('')}</div><div class="actions" style="margin-top:14px"><button class="btn primary" id="saveMarks">Save marks</button><button class="btn" id="clearMarks">Clear marks</button></div>`;
+ const s=data.students.find(x=>x.id===id),saved=getMarkSet(month,id);
+ $('marksEntry').innerHTML=`
+  <div class="mhead">${avatar(s?.name||'?')}<div class="txt"><div class="name">${esc(s?.name||'')}</div><div class="meta">${esc(cls(s?.className)||'No class')} · ${esc(monthName(month))}</div></div></div>
+  <div class="mgrid">${SUBJECTS.map((sub,i)=>`<label class="mfield" for="mark_${i}"><span>${esc(sub)}</span><div class="minput"><input type="number" id="mark_${i}" min="0" max="100" step="1" inputmode="numeric" placeholder="—" value="${saved[sub]??''}"><small>/ 100</small></div></label>`).join('')}</div>
+  <div class="mpreview" id="mpreview"></div>
+  <div class="mrow-end"><button class="btn ghost" id="clearMarks">Clear marks</button><button class="btn primary" id="saveMarks">Save marks</button></div>`;
+ updateMarkPreview();
+ SUBJECTS.forEach((_,i)=>$(`mark_${i}`).addEventListener('input',updateMarkPreview));
  $('saveMarks').addEventListener('click',()=>{
-  const scores={};
-  for(let i=0;i<SUBJECTS.length;i++){const el=$(`mark_${i}`),raw=el.value.trim();if(raw==='')continue;const n=Number(raw);if(!Number.isFinite(n)||n<0||n>100)return toast(`Enter a valid mark between 0 and 100 for ${SUBJECTS[i]}.`);scores[SUBJECTS[i]]=n}
+  const{scores,bad}=readMarkInputs();
+  if(bad)return toast(`Enter a mark between 0 and 100 for ${bad}.`);
   data.marks??={};data.marks[month]??={};
   if(Object.keys(scores).length)data.marks[month][id]=scores;else delete data.marks[month][id];
-  if(data.marks[month]&&!Object.keys(data.marks[month]).length)delete data.marks[month];
-  save();toast('Marks saved successfully.');
+  if(!Object.keys(data.marks[month]).length)delete data.marks[month];
+  save();toast('Marks saved.');
  });
- $('clearMarks').addEventListener('click',()=>confirmAction('Clear marks','Remove all saved subject marks for this student and month?',()=>{if(data.marks?.[month]){delete data.marks[month][id];if(!Object.keys(data.marks[month]).length)delete data.marks[month];save()}renderMarksEntry();toast('Marks cleared.')}));
+ $('clearMarks').addEventListener('click',()=>confirmAction('Clear marks','Remove all saved subject marks for this student and month?',()=>{
+  if(data.marks?.[month]){delete data.marks[month][id];if(!Object.keys(data.marks[month]).length)delete data.marks[month]}
+  save();renderMarksEntry();toast('Marks cleared.');
+ },'Clear'));
+}
+function refreshMarksStudents(){
+ const fill=(sel,placeholder)=>{
+  const old=sel.value;
+  sel.innerHTML=`<option value="">${placeholder}</option>`+activeStudents().slice().sort(byClass).map(s=>`<option value="${s.id}">${esc(s.name)}${cls(s.className)?' · '+esc(cls(s.className)):''}</option>`).join('');
+  sel.value=[...sel.options].some(o=>o.value===old)?old:'';
+ };
+ fill($('marksStudent'),'Choose a student');
+ fill($('marksReportStudent'),'Choose a student');
+ if($('marksStudent').value)renderMarksEntry();
 }
 $('marksStudent').addEventListener('change',renderMarksEntry);
 $('marksMonth').addEventListener('change',renderMarksEntry);
-$('marksReportStudent').addEventListener('change',()=>{});
-$('marksReportMonth').addEventListener('change',()=>{});
+
 function generateMarksReport(){
  const id=$('marksReportStudent').value,month=$('marksReportMonth').value;
  if(!id||!month)return toast('Choose a student and month first.');
  const student=data.students.find(s=>s.id===id);if(!student)return;
- const scores=getMarkSet(month,id),entries=SUBJECTS.filter(s=>scores[s]!==undefined).map(s=>({subject:s,mark:Number(scores[s])}));
- if(!entries.length)return toast('No marks saved for this student in the selected month.');
- const total=entries.reduce((sum,x)=>sum+x.mark,0),max=entries.length*100,pct=total/max*100;
- const grade=pct>=90?'A+':pct>=80?'A':pct>=70?'B':pct>=60?'C':pct>=50?'D':pct>=33?'E':'Needs Improvement';
- const attendanceDays=Object.keys(data.attendance||{}).filter(d=>d.startsWith(month));
- let present=0,absent=0,leave=0;
- attendanceDays.forEach(d=>{const v=data.attendance[d]?.[id];if(v==='P')present++;if(v==='A')absent++;if(v==='L')leave++});
- const monthName=new Date(month+'-01T00:00:00').toLocaleDateString(undefined,{month:'long',year:'numeric'});
- $('marksReportOutput').innerHTML=`<div class="report-card-premium"><div class="report-card-band"><div class="school-kicker">${esc(data.settings.institute||'Institute Name')}</div><h2>Monthly Academic Report</h2><div class="report-subtitle">${esc(monthName)}</div></div><div class="report-card-body">
-  <div class="report-student-strip" style="margin-bottom:16px"><div><strong>${esc(student.name)}</strong><div style="font-size:13px;color:#71809b">${esc(student.className||'No class assigned')}${student.roll?' · Roll '+esc(student.roll):''}</div></div><div style="text-align:right;font-size:12px;color:#71809b">STUDENT REPORT<br><b style="color:#172033">${esc(monthName)}</b></div></div>
-  <div class="tablewrap" style="border-color:#e5eaf5"><table><thead><tr><th>Subject</th><th>Marks Obtained</th><th>Maximum Marks</th></tr></thead><tbody>${entries.map(x=>`<tr><td style="font-weight:600">${esc(x.subject)}</td><td>${x.mark}</td><td>100</td></tr>`).join('')}</tbody><tfoot><tr><th>Total</th><th>${total}</th><th>${max}</th></tr></tfoot></table></div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0"><div class="report-metric"><small>Percentage</small><b>${pct.toFixed(1)}%</b></div><div class="report-metric"><small>Grade</small><b>${grade}</b></div><div class="report-metric"><small>Subjects</small><b>${entries.length}</b></div></div>
-  <h3 style="font-size:15px;margin:18px 0 8px">Attendance summary</h3><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><div style="background:#f3faf6;padding:10px;border-radius:12px"><small>Present</small><b style="display:block;color:#16865c;font-size:20px">${present}</b></div><div style="background:#fff3f3;padding:10px;border-radius:12px"><small>Absent</small><b style="display:block;color:#c84955;font-size:20px">${absent}</b></div><div style="background:#fff8e9;padding:10px;border-radius:12px"><small>Leave</small><b style="display:block;color:#a87825;font-size:20px">${leave}</b></div></div>
-  <div class="report-card-foot"><span>Generated on ${fmtDate(today())}</span><span>Parent signature: __________________</span></div></div></div>`;
- toast('Monthly report card generated.');
+ const r=computeResult(getMarkSet(month,id));
+ if(!r.entries.length)return toast('No marks saved for this student in the selected month.');
+ const att=monthRecords(id,month),th=threshold();
+ const attStatus=!att.counted?'':(att.pct>=th?'ok':'low');
+ $('marksReportOutput').innerHTML=`<article class="paper">
+  <header class="p-head"><div class="p-inst">${esc(instituteName())}</div><h3>Monthly Report Card</h3><div class="p-month">${esc(monthName(month))}</div></header>
+  <section class="p-student">
+   <div><div class="p-name">${esc(student.name)}</div><div class="p-meta">${esc(cls(student.className)||'No class assigned')}${student.roll?' · Roll '+esc(student.roll):''}</div></div>
+   <div class="p-right"><small>Reporting month</small><b>${esc(monthName(month))}</b></div>
+  </section>
+  <table class="p-table">
+   <thead><tr><th>Subject</th><th class="bar-col">Performance</th><th class="num">Marks</th><th class="num">Out of</th></tr></thead>
+   <tbody>${r.entries.map(x=>`<tr><td>${esc(x.subject)}</td><td class="bar-col"><span class="pbar"><i style="width:${x.mark}%"></i></span></td><td class="num"><b>${x.mark}</b></td><td class="num">100</td></tr>`).join('')}</tbody>
+   <tfoot><tr><th>Total</th><th></th><th class="num">${r.total}</th><th class="num">${r.max}</th></tr></tfoot>
+  </table>
+  <section class="p-tiles">
+   <div><small>Percentage</small><b>${r.pct.toFixed(1)}%</b></div>
+   <div><small>Grade</small><b>${esc(r.grade)}</b></div>
+   <div><small>Subjects</small><b>${r.entries.length}</b></div>
+  </section>
+  <h4>Attendance this month</h4>
+  <div class="p-att-row">
+   <span class="tag P">Present ${att.p}</span><span class="tag A">Absent ${att.a}</span><span class="tag L">Leave ${att.l}</span>
+   <span class="p-att-pct">${att.counted?att.pct+'% attendance':'No attendance marked'}</span>
+  </div>
+  <footer class="p-foot"><span>Generated ${esc(fmtDate(today()))}</span><span class="sig">Parent signature</span><span class="sig">Authorised signature</span></footer>
+ </article>`;
+ toast('Report card ready.');
 }
 $('generateMarksReport').addEventListener('click',generateMarksReport);
-$('printMarksReport').addEventListener('click',()=>{if(!$('marksReportOutput').querySelector('table'))return toast('Generate a report card first.');window.print()});
+$('printMarksReport').addEventListener('click',()=>{if(!$('marksReportOutput').querySelector('.paper'))return toast('Generate a report card first.');window.print()});
 
-function refreshReportSelect(){const sel=$('reportStudent'),old=sel.value;sel.innerHTML='<option value="">Choose a student</option>'+activeStudents().slice().sort((a,b)=>a.name.localeCompare(b.name)).map(s=>`<option value="${s.id}">${esc(s.name)}${s.className?' · '+esc(s.className):''}</option>`).join('');if([...sel.options].some(o=>o.value===old))sel.value=old}
-function monthRecords(id,month){const days=Object.keys(data.attendance).filter(d=>d.startsWith(month)).sort();let p=0,a=0,l=0,marked=0;const detail=[];days.forEach(d=>{const v=data.attendance[d]?.[id];if(v){marked++;if(v==='P')p++;if(v==='A')a++;if(v==='L')l++;detail.push({date:d,status:v})}});const counted=p+a,pct=counted?Math.round(p/counted*100):0;return{p,a,l,marked,counted,pct,detail}}
+/* ---------- Attendance card ---------- */
+function refreshReportSelect(){
+ const sel=$('reportStudent'),old=sel.value;
+ sel.innerHTML='<option value="">Choose a student</option>'+activeStudents().slice().sort(byClass).map(s=>`<option value="${s.id}">${esc(s.name)}${cls(s.className)?' · '+esc(cls(s.className)):''}</option>`).join('');
+ sel.value=[...sel.options].some(o=>o.value===old)?old:'';
+}
+function generateCard(){
+ const id=$('reportStudent').value,month=$('reportMonth').value;
+ if(!id||!month)return toast('Choose a student and month first.');
+ const s=data.students.find(x=>x.id===id);if(!s)return;
+ const r=monthRecords(id,month),th=threshold();
+ const C=2*Math.PI*52,offset=C*(1-(r.counted?r.pct:0)/100);
+ const state=!r.counted?'':(r.pct>=th?'ok':'low');
+ const statusText=!r.counted?'No present or absent days marked yet':(r.pct>=th?`Meets the ${th}% minimum`:`Below the ${th}% minimum`);
+ $('reportOutput').innerHTML=`<article class="paper">
+  <header class="p-head"><div class="p-inst">${esc(instituteName())}</div><h3>Monthly Attendance</h3><div class="p-month">${esc(monthName(month))}</div></header>
+  <section class="p-student">
+   <div><div class="p-name">${esc(s.name)}</div><div class="p-meta">${esc(cls(s.className)||'No class assigned')}${s.roll?' · Roll '+esc(s.roll):''}</div></div>
+   <div class="p-right"><small>Marked days</small><b>${r.marked}</b></div>
+  </section>
+  <section class="att-hero">
+   <div class="ring ${state}">
+    <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="val" cx="60" cy="60" r="52" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${offset.toFixed(2)}"/></svg>
+    <div class="ring-txt"><b>${r.counted?r.pct+'%':'—'}</b><small>attendance</small></div>
+   </div>
+   <div class="att-side">
+    <span class="att-status ${state}">${esc(statusText)}</span>
+    <p class="p-note">Attendance % = Present ÷ (Present + Absent). Leave days are not counted in the percentage.</p>
+   </div>
+  </section>
+  <section class="p-tiles">
+   <div><small>Present</small><b>${r.p}</b></div>
+   <div><small>Absent</small><b>${r.a}</b></div>
+   <div><small>On leave</small><b>${r.l}</b></div>
+  </section>
+  ${r.detail.length?`<h4>Daily record</h4><table class="p-table compact"><thead><tr><th>Date</th><th>Day</th><th>Status</th></tr></thead><tbody>${r.detail.map(x=>`<tr><td>${esc(fmtDate(x.date))}</td><td>${esc(weekday(x.date))}</td><td><span class="tag ${x.status}">${STATUS_LABEL[x.status]}</span></td></tr>`).join('')}</tbody></table>`:'<div class="empty">No attendance has been marked for this student in this month.</div>'}
+  <footer class="p-foot"><span>Generated ${esc(fmtDate(today()))}</span><span>Parent contact: ${esc(s.phone||'Not provided')}</span></footer>
+ </article>`;
+ toast('Attendance card ready.');
+}
 $('generateCard').addEventListener('click',generateCard);
-function generateCard(){const id=$('reportStudent').value,month=$('reportMonth').value;if(!id||!month)return toast('Choose a student and month first.');const s=data.students.find(x=>x.id===id);if(!s)return;const r=monthRecords(id,month),threshold=Number(data.settings.threshold)||75,monthName=new Date(month+'-01T00:00:00').toLocaleDateString(undefined,{month:'long',year:'numeric'});$('reportOutput').innerHTML=`<div class="report-card-premium"><div class="report-card-band"><div class="school-kicker">${esc(data.settings.institute||'Institute Name')}</div><h2>Monthly Attendance Card</h2><div class="report-subtitle">${esc(monthName)}</div></div><div class="report-card-body"><div class="report-student-strip"><div><div style="font-size:11px;letter-spacing:1.3px;color:#7c8aa8;text-transform:uppercase">${esc(data.settings.institute||'Anant Education')}</div><h2 style="margin:5px 0;font-size:24px">${esc(s.name)}</h2><div style="color:#7d879b;font-size:13px">${esc(s.className||'No class assigned')} ${s.roll?'· Roll '+esc(s.roll):''}</div></div><div style="text-align:right"><div style="font-size:11px;color:#7d879b">MONTHLY ATTENDANCE</div><b>${esc(monthName)}</b></div></div><div style="margin:20px 0;padding:18px;border-radius:17px;background:linear-gradient(120deg,#557cf4,#9275e9);color:white"><div style="font-size:12px;opacity:.85">ATTENDANCE PERCENTAGE</div><div style="font-size:42px;font-weight:800;letter-spacing:-1px">${r.pct}%</div><div style="font-size:12px;opacity:.85">${r.pct>=threshold?'Meeting the attendance threshold':'Below '+threshold+'% attendance threshold'}</div></div><div class="reportgrid"><div class="reportstat"><small>Present</small><b style="color:#15966b">${r.p}</b></div><div class="reportstat"><small>Absent</small><b style="color:#d85e6b">${r.a}</b></div><div class="reportstat"><small>On leave</small><b style="color:#bd862f">${r.l}</b></div></div><div style="display:flex;justify-content:space-between;color:#7d879b;font-size:12px"><span>Marked attendance days: <b style="color:#172033">${r.marked}</b></span><span>Percentage basis: Present ÷ (Present + Absent)</span></div><div class="progress"><i style="width:${r.pct}%"></i></div><div class="report-card-foot"><span>Generated on ${fmtDate(today())}</span><span>Parent contact: ${esc(s.phone||'Not provided')}</span></div></div></div>${r.detail.length?`<h3 style="font-size:15px;margin:20px 0 9px">Daily record</h3><div class="tablewrap"><table id="reportTable"><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>${r.detail.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${x.status==='P'?'Present':x.status==='A'?'Absent':'Leave'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No attendance has been marked for this student in this month.</div>'}`;toast('Monthly card generated.')}
-$('printCard').addEventListener('click',()=>{if(!$('reportOutput').querySelector('h2'))return toast('Generate a card first.');window.print()});
-function exportData(){const blob=new Blob([JSON.stringify({...data,exportedAt:new Date().toISOString(),app:'Anant Attendance'},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`anant-attendance-backup-${today()}.json`;a.click();URL.revokeObjectURL(a.href);toast('Backup downloaded.')}
-$('exportBtn').addEventListener('click',exportData);$('exportBtn2').addEventListener('click',exportData);
-function chooseImport(){$('importFile').click()}$('importBtn').addEventListener('click',chooseImport);$('importBtn2').addEventListener('click',chooseImport);
-$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!Array.isArray(obj.students)||!obj.attendance||typeof obj.attendance!=='object')throw Error('Invalid backup');confirmAction('Restore backup','This replaces the current student and attendance data with the selected backup.',()=>{data={students:obj.students,attendance:obj.attendance,marks:obj.marks||{},settings:{...data.settings,...obj.settings}};save();refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();renderDaywise();toast('Backup restored.')})}catch(err){toast('Could not read that backup file.')}e.target.value=''});
-function confirmAction(title,message,fn){$('confirmTitle').textContent=title;$('confirmText').textContent=message;pendingConfirm=fn;$('confirmModal').classList.add('open')}
+$('printCard').addEventListener('click',()=>{if(!$('reportOutput').querySelector('.paper'))return toast('Generate a card first.');window.print()});
+
+/* ---------- Backup & restore ---------- */
+function download(name,blob){
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function exportData(){
+ const payload={app:APP_NAME,version:2,exportedAt:new Date().toISOString(),students:data.students,attendance:data.attendance,marks:data.marks,settings:data.settings};
+ download(`coaching-manager-backup-${today()}.json`,new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
+ try{localStorage.setItem(BACKUP_KEY,String(Date.now()))}catch(e){}
+ renderBackupHint();toast('Backup downloaded.');
+}
+function renderBackupHint(){
+ let last=0;try{last=Number(localStorage.getItem(BACKUP_KEY))||0}catch(e){}
+ const hasData=data.students.length>0||Object.keys(data.attendance).length>0;
+ const days=last?(Date.now()-last)/864e5:Infinity;
+ $('backupHint').hidden=!(hasData&&days>14);
+ $('backupHintText').textContent=last?`Your last backup was ${Math.floor(days)} days ago. Download a fresh copy to stay safe.`:'You have not downloaded a backup yet. Your data lives only in this browser.';
+ $('lastBackupText').textContent=last?`Last backup: ${new Date(last).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}`:'No backup downloaded yet';
+}
+$('exportBtn').addEventListener('click',exportData);
+$('exportBtn2').addEventListener('click',exportData);
+$('backupNow').addEventListener('click',exportData);
+const chooseImport=()=>$('importFile').click();
+$('importBtn').addEventListener('click',chooseImport);
+$('importBtn2').addEventListener('click',chooseImport);
+$('importFile').addEventListener('change',async e=>{
+ const f=e.target.files[0];e.target.value='';if(!f)return;
+ let obj;
+ try{obj=JSON.parse(await f.text())}catch(err){return toast('That file is not a valid backup.')}
+ if(!obj||!Array.isArray(obj.students)||!obj.attendance||typeof obj.attendance!=='object')return toast('That file is not a Coaching Manager backup.');
+ confirmAction('Restore backup','This replaces the current students, attendance, marks and settings with the selected backup.',()=>{
+  data={students:obj.students,attendance:obj.attendance,marks:obj.marks||{},settings:{...data.settings,...(obj.settings||{})}};
+  save();refreshAll();toast('Backup restored.');
+ },'Restore');
+});
+
+/* ---------- Confirm dialog ---------- */
+function confirmAction(title,message,fn,yesLabel='Continue'){
+ $('confirmTitle').textContent=title;$('confirmText').textContent=message;$('confirmYes').textContent=yesLabel;
+ pendingConfirm=fn;$('confirmModal').classList.add('open');$('confirmYes').focus();
+}
 function closeConfirm(){$('confirmModal').classList.remove('open');pendingConfirm=null}
-$('confirmClose').addEventListener('click',closeConfirm);$('confirmCancel').addEventListener('click',closeConfirm);$('confirmYes').addEventListener('click',()=>{const fn=pendingConfirm;closeConfirm();fn?.()});
-$('instituteName').value=data.settings.institute||'Anant Education';$('threshold').value=data.settings.threshold||75;
-$('saveSettings').addEventListener('click',()=>{data.settings.institute=$('instituteName').value.trim()||'Anant Education';data.settings.threshold=Math.max(1,Math.min(100,Number($('threshold').value)||75));save();toast('Settings saved.')});
-$('clearData').addEventListener('click',()=>confirmAction('Delete all app data','This permanently deletes all students, attendance records and settings from this browser. Download a backup first if you may need this data.',()=>{localStorage.removeItem(KEY);data={students:[],attendance:{},settings:{institute:'Anant Education',threshold:75}};refreshClassOptions();renderStudents();renderAttendance();refreshReportSelect();renderDaywise();toast('All app data deleted.')}));
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.add('show')});
-$('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return toast('Use your browser menu and choose Install app / Add to Home screen.');deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.remove('show')});
-if('serviceWorker'in navigator && location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-const THEME_KEY='anantAttendance.theme';
-function applyTheme(c){const r=document.documentElement;if(c==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',c);document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('on',b.dataset.themeChoice===c));try{localStorage.setItem(THEME_KEY,c)}catch(e){}}
+$('confirmClose')?.addEventListener('click',closeConfirm);
+$('confirmCancel').addEventListener('click',closeConfirm);
+$('confirmYes').addEventListener('click',()=>{const fn=pendingConfirm;closeConfirm();fn?.()});
+$('confirmModal').addEventListener('click',e=>{if(e.target.id==='confirmModal')closeConfirm()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('confirmModal').classList.contains('open'))closeConfirm()});
+
+/* ---------- Settings ---------- */
+$('instituteName').value=instituteName();
+$('threshold').value=threshold();
+$('saveSettings').addEventListener('click',()=>{
+ data.settings.institute=$('instituteName').value.trim()||DEFAULT_INSTITUTE;
+ data.settings.threshold=Math.max(1,Math.min(100,Number($('threshold').value)||75));
+ save();renderStudents();toast('Settings saved.');
+});
+$('clearData').addEventListener('click',()=>confirmAction('Delete all app data','This permanently deletes all students, attendance, marks and settings from this browser. Download a backup first if you may need them.',()=>{
+ try{localStorage.removeItem(KEY);localStorage.removeItem(OLD_KEY)}catch(e){}
+ data={students:[],attendance:{},marks:{},settings:{institute:DEFAULT_INSTITUTE,threshold:75}};
+ $('instituteName').value=DEFAULT_INSTITUTE;$('threshold').value=75;
+ resetForm();refreshAll();toast('All app data deleted.');
+},'Delete'));
+
+/* ---------- Theme ---------- */
+function applyTheme(c){
+ const r=document.documentElement;
+ if(c==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',c);
+ document.querySelectorAll('[data-theme-choice]').forEach(b=>{const on=b.dataset.themeChoice===c;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))});
+ try{localStorage.setItem(THEME_KEY,c)}catch(e){}
+}
 document.querySelectorAll('[data-theme-choice]').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.themeChoice)));
-applyTheme(localStorage.getItem(THEME_KEY)||'system');
-refreshClassOptions();renderAttendance();renderStudents();refreshReportSelect();refreshMarksStudents();renderDashboard();renderDaywise();
+let savedTheme='system';try{savedTheme=localStorage.getItem(THEME_KEY)||localStorage.getItem(OLD_THEME_KEY)||'system'}catch(e){}
+applyTheme(savedTheme);
+
+/* ---------- Tabs ---------- */
+function setTab(name){
+ document.querySelectorAll('.tab').forEach(b=>{const on=b.dataset.tab===name;b.classList.toggle('active',on);b.setAttribute('aria-selected',String(on))});
+ document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===name));
+ if(name==='attendance')renderAttendance();
+ if(name==='daywise')renderDaywise();
+ if(name==='students')renderStudents();
+ if(name==='marks'||name==='marksReport')refreshMarksStudents();
+ if(name==='reports')refreshReportSelect();
+ if(name==='settings')renderBackupHint();
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+
+/* ---------- Refresh everything after a data change ---------- */
+function refreshAll(){
+ const names=classes();
+ fillSelect($('attClass'),'Everyone',true,names);
+ fillSelect($('daywiseClass'),'All classes',true,names);
+ fillSelect($('studentClassFilter'),'All classes and groups',true,names);
+ $('classOptions').innerHTML=names.map(c=>`<option value="${esc(c)}"></option>`).join('');
+ renderAttendance();
+ renderStudents();
+ refreshReportSelect();
+ refreshMarksStudents();
+ renderDaywise();
+ renderBackupHint();
+}
+
+/* ---------- Install prompt ---------- */
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').hidden=false});
+window.addEventListener('appinstalled',()=>{$('installBtn').hidden=true;deferredPrompt=null});
+$('installBtn').addEventListener('click',async()=>{
+ if(!deferredPrompt)return toast('Use your browser menu and choose Install app / Add to Home screen.');
+ deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').hidden=true;
+});
+if('serviceWorker'in navigator&&location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
+/* ---------- Start ---------- */
+$('attDate').value=today();
+$('reportMonth').value=monthNow();
+$('daywiseMonth').value=monthNow();
+$('marksMonth').value=monthNow();
+$('marksReportMonth').value=monthNow();
+$('sJoin').value=today();
+refreshAll();
 })();
 </script>
-</body></html>
+</body>
+</html>
