@@ -1,4 +1,4 @@
-COACHING MANAGER — v2.0
+COACHING MANAGER — v2.1
 Made by Jack
 
 FILES
@@ -11,21 +11,36 @@ RUN IT
   then open http://localhost:8000 and use the browser's "Install app" option.
 
 DATA
-- Students, attendance, marks and settings are saved in this browser on this device.
-- Nothing syncs between devices. Use Backup (download JSON) and Restore regularly.
-- Data saved by the earlier "Attendance Marker" version is picked up automatically.
+- Everything is saved in this browser on this device. Nothing syncs automatically.
+- Backup: download a JSON file. Restore offers two choices:
+    Replace - swaps this browser's data for the backup.
+    Merge   - adds the backup's students, attendance and marks to what is already here
+              (use this to combine two devices' records).
+- Data saved by the earlier "Attendance Marker" / v2.0 versions is picked up automatically.
 
-ATTENDANCE %
-Present / (Present + Absent) x 100. Leave is excluded.
+STUDENTS
+- Import CSV: download "Get template", fill it in (Excel: Save As > CSV), then Import CSV.
+  Columns: name, class, roll, phone, admission_date (YYYY-MM-DD or DD/MM/YYYY).
+  Duplicates (same name, class and roll) are skipped.
 
-TABS
-- Attendance: tap P / A / L per student. "Mark all present" only fills unmarked students.
-- Day-wise: all saved records by date, filter by month, class, or name; export CSV.
-- Students: add, edit, remove. Shows each student's attendance % for the current month.
-- Marks: enter 7 subjects out of 100 per student per month, with live total and grade.
-- Report: printable monthly report card (marks + attendance).
-- Cards: printable monthly attendance card with a ring chart.
-- Settings: theme, institute name on printouts, low-attendance threshold, backup, About.
+ATTENDANCE
+- Tap P / A / L per student. "Mark all present" fills only unmarked students.
+- Absentees for the selected date get a WhatsApp button that opens a ready-made message
+  to the parent number. Edit the wording in Settings. Numbers without a country code are
+  treated as Indian (+91).
+- Attendance % = Present / (Present + Absent) x 100. Leave is excluded.
+
+MARKS & SUBJECTS
+- Settings > Subjects & max marks: rename, add, remove subjects, and set each one's maximum.
+- Marks entry shows a live total, percentage and grade. Report cards use the same subjects.
+
+OVERVIEW
+- Month summary, six-month attendance trend, and a class-wise table of attendance and marks.
+
+APP LOCK
+- Settings > App lock sets a 4 to 8 digit PIN. The app asks for it on opening.
+- This keeps casual users out. It does not encrypt the stored data.
+- Forgot PIN? The only way back in is to delete all app data (you lose local data, so back up first).
 
 PRINTING
 Use "Print / PDF" on the Report or Cards tab, then choose "Save as PDF" in the print dialog.
